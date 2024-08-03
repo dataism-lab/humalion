@@ -19,6 +19,10 @@ Changelog = "https://github.com/dataism-lab/pygmalion/releases"
 python = "^3.10"
 click = ">=8.0.1"
 pydantic = "^2.8.2"
+aioboto3 = "^13.1.1"
+loguru = "^0.7.2"
+types-aioboto3 = "^13.1.1"
+tqdm = "^4.66.4"
 
 [tool.poetry.dev-dependencies]
 Pygments = ">=2.10.0"

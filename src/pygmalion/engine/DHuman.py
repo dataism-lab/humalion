@@ -37,8 +37,16 @@ class TwinDHuman(ABCDHuman):
         super().__init__(voice=voice, face_embeddings=face_embeddings, persona=persona)
         self.user_photo = user_photos
 
-        
+
 class SyntheticDHuman(ABCDHuman):
-    def __init__(self, generated_photo, voice=None, face_embeddings=None, persona=None):
+    def __init__(
+            self,
+            generative_model,
+            face_swap: bool = True,
+            generated_photo=None,
+            voice=None,
+            face_embeddings=None,
+            persona=None
+    ):
         super().__init__(voice=voice, face_embeddings=face_embeddings, persona=persona)
         self.generated_photo = generated_photo
