@@ -1,5 +1,5 @@
 """Sphinx configuration."""
-project = "Pygma"
+project = "pygmalionlion"
 author = "Dataism Lab"
 copyright = "2024, Dataism Lab"
 extensions = [

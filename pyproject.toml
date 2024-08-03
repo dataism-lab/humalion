@@ -1,19 +1,19 @@
 [tool.poetry]
-name = "pygma"
+name = "pygmalion"
 version = "0.0.0"
-description = "Pygma"
+description = "PygmaLion"
 authors = ["Dataism Lab <timoshenkois.dev@gmail.com>"]
 license = "Apache-2.0"
 readme = "README.md"
-homepage = "https://github.com/dataism-lab/pygma"
-repository = "https://github.com/dataism-lab/pygma"
-documentation = "https://pygma.readthedocs.io"
+homepage = "https://github.com/dataism-lab/Pygmalion"
+repository = "https://github.com/dataism-lab/Pygmalion"
+documentation = "https://pygmalion.readthedocs.io"
 classifiers = [
     "Development Status :: 1 - Planning",
 ]
 
 [tool.poetry.urls]
-Changelog = "https://github.com/dataism-lab/pygma/releases"
+Changelog = "https://github.com/dataism-lab/pygmalion/releases"
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -46,7 +46,7 @@ xdoctest = {extras = ["colors"], version = ">=0.15.10"}
 myst-parser = {version = ">=0.16.1"}
 
 [tool.poetry.scripts]
-pygma = "pygma.__main__:main"
+pygmalion = "pygmalion.__main__:main"
 
 [tool.coverage.paths]
 source = ["src", "*/site-packages"]
@@ -54,7 +54,7 @@ tests = ["tests", "*/tests"]
 
 [tool.coverage.run]
 branch = true
-source = ["pygma", "tests"]
+source = ["pygmalion", "tests"]
 
 [tool.coverage.report]
 show_missing = true

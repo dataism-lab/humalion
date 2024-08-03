@@ -1,19 +1,19 @@
-# Pygma
+# PygmaLion
+![PygmaLion](docs/imgs/pygmalion_dark.png)
+[![PyPI](https://img.shields.io/pypi/v/pygmalion.svg)][pypi_]
+[![Status](https://img.shields.io/pypi/status/pygmalion.svg)][status]
+[![Python Version](https://img.shields.io/pypi/pyversions/pygmalion)][python version]
+[![License](https://img.shields.io/pypi/l/pygmalion)][license]
 
-[![PyPI](https://img.shields.io/pypi/v/pygma.svg)][pypi_]
-[![Status](https://img.shields.io/pypi/status/pygma.svg)][status]
-[![Python Version](https://img.shields.io/pypi/pyversions/pygma)][python version]
-[![License](https://img.shields.io/pypi/l/pygma)][license]
-
-[![Read the documentation at https://pygma.readthedocs.io/](https://img.shields.io/readthedocs/pygma/latest.svg?label=Read%20the%20Docs)][read the docs]
-[![Tests](https://github.com/dataism-lab/pygma/workflows/Tests/badge.svg)][tests]
-[![Codecov](https://codecov.io/gh/dataism-lab/pygma/branch/main/graph/badge.svg)][codecov]
+[![Read the documentation at https://pygmalion.readthedocs.io/](https://img.shields.io/readthedocs/pygmalion/latest.svg?label=Read%20the%20Docs)][read the docs]
+[![Tests](https://github.com/dataism-lab/pygmalion/workflows/Tests/badge.svg)][tests]
+[![Codecov](https://codecov.io/gh/dataism-lab/pygmalion/branch/main/graph/badge.svg)][codecov]
 
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)][pre-commit]
 [![Black](https://img.shields.io/badge/code%20style-black-000000.svg)][black]
 
-[pypi_]: https://pypi.org/project/pygma/
-[status]: https://pypi.org/project/pygma/
+[pypi_]: https://pypi.org/project/pygmalion/
+[status]: https://pypi.org/project/pygmalion/
 [python version]: https://pypi.org/project/pygma
 [read the docs]: https://pygma.readthedocs.io/
 [tests]: https://github.com/dataism-lab/pygma/actions?workflow=Tests

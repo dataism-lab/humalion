@@ -1,8 +1,8 @@
 # Reference
 
-## pygma
+## pygmalion
 
 ```{eval-rst}
-.. automodule:: pygma
+.. automodule:: pygmalion
    :members:
 ```

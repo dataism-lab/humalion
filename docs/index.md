@@ -19,5 +19,5 @@ reference
 contributing
 Code of Conduct <codeofconduct>
 License <license>
-Changelog <https://github.com/dataism-lab/pygma/releases>
+Changelog <https://github.com/dataism-lab/pygmalion/releases>
 ```

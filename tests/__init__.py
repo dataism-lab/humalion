@@ -1,1 +1,1 @@
-"""Test suite for the pygma package."""
+"""Test suite for the pygmalion package."""

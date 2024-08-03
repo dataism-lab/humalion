@@ -2,7 +2,7 @@
 import pytest
 from click.testing import CliRunner
 
-from pygma import __main__
+from pygmalion import __main__
 
 
 @pytest.fixture
