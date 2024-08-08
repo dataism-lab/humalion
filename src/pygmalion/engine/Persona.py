@@ -44,15 +44,80 @@ class Beard(str, Enum):
     CHIN_STRAP_STYLE_BEARD = 'A beard with no mustache that circles the chin'
 
 
+class FaceShape(str, Enum):
+    OVAL = "oval"
+    ROUND = "round"
+    SQUARE = "square"
+    DIAMOND = "diamond"
+    HEART = "heart"
+    RECTANGLE = "rectangle"
+
+
+class BodyShape(Enum):
+    """
+    TRIANGLE: This body shape typically has wider hips and shoulders that are narrower in comparison.
+    COLUMN: This body shape has hardly any difference in width between the shoulders, waist, or hips.
+    RECTANGLE: This body shape initially appears to be column-shaped, but is more athletic aesthetically as the hips and shoulders are equal width.
+    OVAL: This body shape typically has wider waist and chest areas than the hips.
+    INVERTED_TRIANGLE: This body shape features broad shoulders with slim waist and hips.
+    HOURGLASS: This body shape is known for its balanced bust and hip proportions with a slender waist.
+    FULL_HOURGLASS: This is similar to the hourglass shape, but it typically features a fuller bust.
+    """
+    TRIANGLE = "triangle"
+    COLUMN = "column"
+    RECTANGLE = "rectangle"
+    OVAL = "oval"
+    INVERTED_TRIANGLE = "inverted triangle"
+    HOURGLASS = "hourglass"
+    FULL_HOURGLASS = "full hourglass"
+
+
 class Persona:
+    """
+    A class representing a persona by parameters.
+
+    Attributes:
+        name (str): The name of the persona.
+        gender (Gender): The gender of the persona.
+        skintone (SkinTone): The skin tone of the persona.
+        beard (Beard): The presence of beard on the persona.
+        hair_color (str): The hair color of the persona.
+        hair_style (str): The hair style of the persona.
+        face_shape (FaceShape): The face shape of the persona.
+        body_shape (BodyShape): The body shape of the persona.
+        height (int): The height of the persona in centimeters.
+        clothes (str): The type of clothes worn by the persona.
+        additional_parameters (dict): Additional parameters specific to the persona.
+
+    Methods:
+        prompt(): Returns the full prompt for the persona.
+
+    """
     def __init__(
             self,
             name: str,
             gender: Gender,
             skintone: SkinTone,
             beard: Beard,
+            hair_color: str,
+            hair_style: str,
+            face_shape: FaceShape,
+            body_shape: BodyShape,
+            height: int,
+            closes: str,
+            additional_parameters: dict,
     ):
         self.name = name
         self.gender = gender
         self.skintone = skintone
         self.beard = beard
+        self.hair_color = hair_color
+        self.hair_style = hair_style
+        self.face_shape = face_shape
+        self.body_shape = body_shape
+        self.height = height
+        self.closes = closes
+        self.additional_parameters = additional_parameters
+
+    def prompt(self) -> str:
+        pass
