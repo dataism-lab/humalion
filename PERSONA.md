@@ -12,3 +12,11 @@
 
 ## Body Shapes
 ![body_shapes.jpg](assets/body_shapes.jpg)
+From left: 
+1) triangle 
+2) column
+3) rectangle 
+4) oval 
+5) inverted triangle 
+6) hourglass 
+7) full hourglass.
