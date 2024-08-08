@@ -1,4 +1,11 @@
+from abc import ABC, abstractmethod
 from enum import Enum
+
+
+class ABSPersona(ABC):
+    @abstractmethod
+    def prompt(self) -> str:
+        pass
 
 
 class Gender(str, Enum):
@@ -72,7 +79,7 @@ class BodyShape(Enum):
     FULL_HOURGLASS = "full hourglass"
 
 
-class Persona:
+class Persona(ABSPersona):
     """
     A class representing a persona by parameters.
 
@@ -93,6 +100,7 @@ class Persona:
         prompt(): Returns the full prompt for the persona.
 
     """
+
     def __init__(
             self,
             name: str,
