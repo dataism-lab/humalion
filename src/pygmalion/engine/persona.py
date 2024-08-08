@@ -82,7 +82,7 @@ class Persona:
         skintone (SkinTone): The skin tone of the persona.
         beard (Beard): The presence of beard on the persona.
         hair_color (str): The hair color of the persona.
-        hair_style (str): The hair style of the persona.
+        hair_style (str): The hairstyle of the persona.
         face_shape (FaceShape): The face shape of the persona.
         body_shape (BodyShape): The body shape of the persona.
         height (int): The height of the persona in centimeters.
@@ -98,14 +98,14 @@ class Persona:
             name: str,
             gender: Gender,
             skintone: SkinTone,
-            beard: Beard,
-            hair_color: str,
-            hair_style: str,
-            face_shape: FaceShape,
-            body_shape: BodyShape,
-            height: int,
-            closes: str,
-            additional_parameters: dict,
+            beard: Beard = Beard.CLEAN_SHAVED,
+            hair_color: str = 'blonde',
+            hair_style: str = '',
+            face_shape: FaceShape = FaceShape.DIAMOND,
+            body_shape: BodyShape = BodyShape.COLUMN,
+            height: int = 180,
+            closes: str = '',
+            additional_parameters: dict | None = None,
     ):
         self.name = name
         self.gender = gender

@@ -1,4 +1,4 @@
-from pygmalion.engine.UserPhoto import UserPhoto
+from pygmalion.engine.user_photo import UserPhoto
 
 
 class ABCDHuman:
@@ -35,7 +35,7 @@ class ABCDHuman:
 class TwinDHuman(ABCDHuman):
     def __init__(self,  user_photos: list[UserPhoto], voice=None, face_embeddings=None, persona=None):
         super().__init__(voice=voice, face_embeddings=face_embeddings, persona=persona)
-        self.user_photo = user_photos
+        self.user_photos = user_photos
 
 
 class SyntheticDHuman(ABCDHuman):
@@ -50,3 +50,5 @@ class SyntheticDHuman(ABCDHuman):
     ):
         super().__init__(voice=voice, face_embeddings=face_embeddings, persona=persona)
         self.generated_photo = generated_photo
+        self.generative_model = generative_model
+        self.face_swap = face_swap
