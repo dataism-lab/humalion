@@ -105,6 +105,7 @@ class Persona(ABSPersona):
             self,
             name: str,
             gender: Gender,
+            age: int,
             skintone: SkinTone,
             beard: Beard = Beard.CLEAN_SHAVED,
             hair_color: str = 'blonde',
@@ -113,10 +114,15 @@ class Persona(ABSPersona):
             body_shape: BodyShape = BodyShape.COLUMN,
             height: int = 180,
             closes: str = '',
+            race: str | None = None,
             additional_parameters: dict | None = None,
     ):
+        if age <= 0:
+            raise ValueError("Age must be positive")
+
         self.name = name
         self.gender = gender
+        self.age = age
         self.skintone = skintone
         self.beard = beard
         self.hair_color = hair_color
@@ -125,7 +131,59 @@ class Persona(ABSPersona):
         self.body_shape = body_shape
         self.height = height
         self.closes = closes
+        self.race = race
         self.additional_parameters = additional_parameters
 
+    def _gender_with_age(self):
+        prompt = "person"
+        if self.gender == Gender.MALE and 0 < self.age < 3:
+            prompt = "baby boy"
+        elif self.gender == Gender.FEMALE and 0 < self.age < 3:
+            prompt = "baby girl"
+        elif self.gender == Gender.MALE and 3 <= self.age < 12:
+            prompt = "boy"
+        elif self.gender == Gender.FEMALE and 3 <= self.age < 12:
+            prompt = "girl"
+        elif self.gender == Gender.MALE and 12 <= self.age < 18:
+            prompt = "teenage boy"
+        elif self.gender == Gender.FEMALE and 12 <= self.age < 18:
+            prompt = "teenage girl"
+        elif self.gender == Gender.MALE and 18 <= self.age < 23:
+            prompt = "young girl"
+        elif self.gender == Gender.FEMALE and 18 <= self.age < 23:
+            prompt = "young man"
+        elif self.gender == Gender.MALE and 23 <= self.age < 60:
+            prompt = "man"
+        elif self.gender == Gender.FEMALE and 18 <= self.age < 30:
+            prompt = "girl"
+        elif self.gender == Gender.FEMALE and 30 <= self.age < 70:
+            prompt = "woman"
+        elif self.gender == Gender.MALE and self.age > 60:
+            prompt = "old man"
+        elif self.gender == Gender.FEMALE and self.age > 70:
+            prompt = "old woman"
+
+        prompt += f" of {self.age} years old"
+        return prompt
+
     def prompt(self) -> str:
-        pass
+        prompt = self.race if self.race is not None else ""
+        prompt += self._gender_with_age()
+        prompt += f" with {self.skintone.value} skin tone, "
+        if self.beard != Beard.CLEAN_SHAVED:
+            prompt += f"{self.beard.value} beard, "
+
+        prompt += f"{self.hair_color} hair color, "
+        if self.hair_style:
+            prompt += f"{self.hair_style} hairstyle, "
+        prompt += f"{self.face_shape.value} face shape, "
+        prompt += f"{self.body_shape.value} body shape, "
+        prompt += f"{self.height} cm tall, "
+        if self.closes:
+            prompt += f"wearing {self.closes}, "
+        if self.additional_parameters:
+            prompt += ". "
+            for key, value in self.additional_parameters.items():
+                prompt += f"{key} is {value}, "
+
+        return prompt
