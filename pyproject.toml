@@ -23,6 +23,7 @@ aioboto3 = "^13.1.1"
 loguru = "^0.7.2"
 types-aioboto3 = "^13.1.1"
 tqdm = "^4.66.4"
+faker = "^27.0.0"
 
 [tool.poetry.dev-dependencies]
 Pygments = ">=2.10.0"
@@ -52,6 +53,9 @@ myst-parser = {version = ">=0.16.1"}
 
 [tool.poetry.scripts]
 pygmalion = "pygmalion.__main__:main"
+
+[tool.poetry.group.dev.dependencies]
+jupyter = "^1.0.0"
 
 [tool.coverage.paths]
 source = ["src", "*/site-packages"]

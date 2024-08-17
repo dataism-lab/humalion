@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 from enum import Enum
+from faker import Faker
+import random
 
 
 class ABSPersona(ABC):
@@ -95,28 +97,41 @@ class Persona(ABSPersona):
         height (int): The height of the persona in centimeters.
         clothes (str): The type of clothes worn by the persona.
         additional_parameters (dict): Additional parameters specific to the persona.
+        random_person (bool): generate a random persona.
 
     Methods:
         prompt(): Returns the full prompt for the persona.
 
     """
-
     def __init__(
             self,
-            name: str,
-            gender: Gender,
-            age: int,
-            skintone: SkinTone,
+            name: str | None = None,
+            gender: Gender | None = None,
+            age: int | None = None,
+            skintone: SkinTone | None = None,
             beard: Beard = Beard.CLEAN_SHAVED,
             hair_color: str = 'blonde',
             hair_style: str = '',
             face_shape: FaceShape = FaceShape.DIAMOND,
             body_shape: BodyShape = BodyShape.COLUMN,
             height: int = 180,
-            closes: str = '',
+            clothes: str = '',
             race: str | None = None,
             additional_parameters: dict | None = None,
+            random_person: bool = False,
     ):
+        if random_person:
+            faker = Faker()
+            name = faker.name()
+            gender = random.choice(list(Gender))
+            age = random.randint(12, 90)
+            skintone = random.choice(list(SkinTone))
+            beard = random.choice(list(Beard))
+            height = random.randint(150, 210)
+        else:
+            if not all((name, gender, age)):
+                raise ValueError("All mandatory parameters must be given (name, gender, age).")
+
         if age <= 0:
             raise ValueError("Age must be positive")
 
@@ -130,7 +145,7 @@ class Persona(ABSPersona):
         self.face_shape = face_shape
         self.body_shape = body_shape
         self.height = height
-        self.closes = closes
+        self.clothes = clothes
         self.race = race
         self.additional_parameters = additional_parameters
 
@@ -169,7 +184,8 @@ class Persona(ABSPersona):
     def prompt(self) -> str:
         prompt = self.race if self.race is not None else ""
         prompt += self._gender_with_age()
-        prompt += f" with {self.skintone.value} skin tone, "
+        if self.skintone:
+            prompt += f" with {self.skintone.value} skin tone, "
         if self.beard != Beard.CLEAN_SHAVED:
             prompt += f"{self.beard.value} beard, "
 
@@ -179,8 +195,8 @@ class Persona(ABSPersona):
         prompt += f"{self.face_shape.value} face shape, "
         prompt += f"{self.body_shape.value} body shape, "
         prompt += f"{self.height} cm tall, "
-        if self.closes:
-            prompt += f"wearing {self.closes}, "
+        if self.clothes:
+            prompt += f"wearing {self.clothes}, "
         if self.additional_parameters:
             prompt += ". "
             for key, value in self.additional_parameters.items():
