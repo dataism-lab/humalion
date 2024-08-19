@@ -92,3 +92,7 @@ class SDXL(GenerativeModel):
         prompt = self._cover_prompt(prompt)
         photo_path = self._generate_photo_with_sdxl_api(prompt)
         return photo_path
+
+
+    def prepare_model(self):
+        pass

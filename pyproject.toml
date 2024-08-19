@@ -24,6 +24,9 @@ loguru = "^0.7.2"
 types-aioboto3 = "^13.1.1"
 tqdm = "^4.66.4"
 faker = "^27.0.0"
+huggingface-hub = "^0.24.5"
+joblib = "^1.4.2"
+insightface = "^0.7.3"
 
 [tool.poetry.dev-dependencies]
 Pygments = ">=2.10.0"

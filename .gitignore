@@ -439,5 +439,6 @@ $RECYCLE.BIN/
 
 /.venv/
 /output/
+./checkpoints/
 
 
