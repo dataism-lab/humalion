@@ -1,5 +1,7 @@
 import os
 from abc import ABC, abstractmethod
+from pathlib import Path
+
 from huggingface_hub import hf_hub_download
 import diffusers
 from diffusers.utils import load_image
@@ -14,20 +16,25 @@ from insightface.app import FaceAnalysis
 from pipeline_stable_diffusion_xl_instantid import StableDiffusionXLInstantIDPipeline, draw_kps
 
 from pygmalion.engine.face_embedding_model import FaceEmbeddingModel
+from pygmalion.utils.github import github_download_file
 
 
 class InstantID(FaceEmbeddingModel):
-    CONTROLNET_DIR = "ControlNetModel/"
-    CONTROLNET_CONFIG_FILENAME = "config.json"
-    CONTROLNET_CONFIG_FILEPATH = os.path.join(CONTROLNET_DIR, CONTROLNET_CONFIG_FILENAME)
-    CONTROLNET_WEIGHTS_FILENAME = "diffusion_pytorch_model.safetensors"
-    CONTROLNET_WEIGHTS_FILEPATH = os.path.join(CONTROLNET_DIR, CONTROLNET_WEIGHTS_FILENAME)
-    IP_ADAPTER_FILENAME = "ip-adapter.bin"
+    BASE_RESOURCE_DIR = Path('.humalion_resourses')
+    CONTROLNET_DIR = Path("ControlNetModel")
+    CONTROLNET_CONFIG_FILENAME = Path("config.json")
+    CONTROLNET_CONFIG_FILEPATH = CONTROLNET_DIR / CONTROLNET_CONFIG_FILENAME
+    CONTROLNET_WEIGHTS_FILENAME = Path("diffusion_pytorch_model.safetensors")
+    CONTROLNET_WEIGHTS_FILEPATH = CONTROLNET_DIR / CONTROLNET_WEIGHTS_FILENAME
+    IP_ADAPTER_FILENAME = Path("ip-adapter.bin")
     FILEPATHS_FOR_DOWNLOADING = {
         CONTROLNET_CONFIG_FILEPATH,
         CONTROLNET_WEIGHTS_FILEPATH,
         IP_ADAPTER_FILENAME,
     }
+    UTILS_DIR = Path('instant-utils/')
+    INSTANTID_GITHUB_REPO = 'InstantID/InstantID'
+    INSTANTID_PIPLINE_FILENAME = Path('pipeline_stable_diffusion_xl_instantid.py')
 
     def __init__(self, models_weight_path: str = './checkpoints'):
         self.models_weight_path = models_weight_path
@@ -38,15 +45,24 @@ class InstantID(FaceEmbeddingModel):
 
     def check_or_download_models_files(self, force_download: bool = False):
         for fp in self.FILEPATHS_FOR_DOWNLOADING:
-            if not os.path.isfile(fp) or force_download:
+            if not fp.is_file() or force_download:
                 hf_hub_download(
                     repo_id="InstantX/InstantID",
-                    filename=fp,
+                    filename=fp.as_posix(),
                     local_dir=self.models_weight_path
                 )
 
+    @classmethod
+    def download_instant_utils(cls):
+        github_download_file(
+            download_dir=(cls.BASE_RESOURCE_DIR / cls.UTILS_DIR).as_posix(),
+            repo=cls.INSTANTID_GITHUB_REPO,
+            path=cls.INSTANTID_PIPLINE_FILENAME.as_posix()
+        )
+
     def prepare_model(self, force_download: bool = False):
         self.check_or_download_models_files(force_download)
+        self.download_instant_utils()
 
         self.face_detector = FaceAnalysis(name='antelopev2', root='./', providers=['CUDAExecutionProvider', 'CPUExecutionProvider'])
         self.face_detector.prepare(ctx_id=0, det_size=(640, 640))

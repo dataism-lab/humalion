@@ -27,6 +27,7 @@ faker = "^27.0.0"
 huggingface-hub = "^0.24.5"
 joblib = "^1.4.2"
 insightface = "^0.7.3"
+pygithub = "^2.3.0"
 
 [tool.poetry.dev-dependencies]
 Pygments = ">=2.10.0"

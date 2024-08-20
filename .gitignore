@@ -440,5 +440,6 @@ $RECYCLE.BIN/
 /.venv/
 /output/
 ./checkpoints/
+/humalion_resources/
 
 
