@@ -2,7 +2,7 @@ from os import PathLike
 from pathlib import Path
 import random
 
-from humalion.engine.generative_model import GenerativeModel
+from src.humalion.engine.generative_model import GenerativeModel
 
 
 class RandomLocalPhotoGenerativeModel(GenerativeModel):
@@ -18,3 +18,7 @@ class RandomLocalPhotoGenerativeModel(GenerativeModel):
 
     def generate_photo(self, prompt: str) -> str:
         return random.choice(self.photos_list)
+
+    def prepare_model(self):
+        pass
+

@@ -186,7 +186,7 @@ class Persona(ABSPersona):
         prompt += self._gender_with_age()
         if self.skintone:
             prompt += f" with {self.skintone.value} skin tone, "
-        if self.beard != Beard.CLEAN_SHAVED:
+        if self.beard != Beard.CLEAN_SHAVED and self.gender == Gender.MALE:
             prompt += f"{self.beard.value} beard, "
 
         prompt += f"{self.hair_color} hair color, "
@@ -203,3 +203,9 @@ class Persona(ABSPersona):
                 prompt += f"{key} is {value}, "
 
         return prompt
+
+    def __str__(self):
+        return self.prompt()
+
+    def __repr__(self):
+        return self.__str__()
