@@ -1,6 +1,5 @@
 # Humalion
 ![Humalion](docs/imgs/humalion_dark.png)
-![humalion_dark.png](docs/imgs/humalion_dark.png)
 [![Status](https://img.shields.io/pypi/status/humalion.svg)][status]
 [![Python Version](https://img.shields.io/pypi/pyversions/humalion)][python version]
 [![License](https://img.shields.io/pypi/l/humalion)][license]
