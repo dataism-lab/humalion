@@ -15,8 +15,8 @@ from PIL import Image
 from insightface.app import FaceAnalysis
 from pipeline_stable_diffusion_xl_instantid import StableDiffusionXLInstantIDPipeline, draw_kps
 
-from pygmalion.engine.face_embedding_model import FaceEmbeddingModel
-from pygmalion.utils.github import github_download_file
+from humalion.engine.face_embedding_model import FaceEmbeddingModel
+from humalion.utils.github import github_download_file
 
 
 class InstantID(FaceEmbeddingModel):

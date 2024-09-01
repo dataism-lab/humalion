@@ -1,8 +1,8 @@
-from pygmalion.engine.face_detection_model import FaceDetectionModel
-from pygmalion.engine.face_embedding_model import FaceEmbeddingModel
-from pygmalion.engine.generative_model import GenerativeModel
-from pygmalion.engine.persona import ABSPersona
-from pygmalion.engine.user_photo import UserPhoto
+from humalion.engine.face_detection_model import FaceDetectionModel
+from humalion.engine.face_embedding_model import FaceEmbeddingModel
+from humalion.engine.generative_model import GenerativeModel
+from humalion.engine.persona import ABSPersona
+from humalion.engine.user_photo import UserPhoto
 
 
 class ABCDHuman:

@@ -1,19 +1,19 @@
 [tool.poetry]
-name = "pygmalion"
+name = "humalion"
 version = "0.0.0"
-description = "PygmaLion"
+description = "Humalion"
 authors = ["Dataism Lab <timoshenkois.dev@gmail.com>"]
 license = "Apache-2.0"
 readme = "README.md"
-homepage = "https://github.com/dataism-lab/Pygmalion"
-repository = "https://github.com/dataism-lab/Pygmalion"
-documentation = "https://pygmalion.readthedocs.io"
+homepage = "https://github.com/dataism-lab/Humalion"
+repository = "https://github.com/dataism-lab/Humalion"
+documentation = "https://humalion.readthedocs.io"
 classifiers = [
     "Development Status :: 1 - Planning",
 ]
 
 [tool.poetry.urls]
-Changelog = "https://github.com/dataism-lab/pygmalion/releases"
+Changelog = "https://github.com/dataism-lab/humalion/releases"
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -56,7 +56,7 @@ xdoctest = {extras = ["colors"], version = ">=0.15.10"}
 myst-parser = {version = ">=0.16.1"}
 
 [tool.poetry.scripts]
-pygmalion = "pygmalion.__main__:main"
+humalion = "humalion.__main__:main"
 
 [tool.poetry.group.dev.dependencies]
 jupyter = "^1.0.0"
@@ -67,7 +67,7 @@ tests = ["tests", "*/tests"]
 
 [tool.coverage.run]
 branch = true
-source = ["pygmalion", "tests"]
+source = ["humalion", "tests"]
 
 [tool.coverage.report]
 show_missing = true

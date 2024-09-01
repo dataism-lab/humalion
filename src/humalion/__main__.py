@@ -5,8 +5,8 @@ import click
 @click.command()
 @click.version_option()
 def main() -> None:
-    """Pygmalion."""
+    """Humalion."""
 
 
 if __name__ == "__main__":
-    main(prog_name="pygmalion")  # pragma: no cover
+    main(prog_name="humalion")  # pragma: no cover

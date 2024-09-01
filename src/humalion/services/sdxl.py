@@ -2,7 +2,7 @@ import base64
 import uuid
 import os
 
-from pygmalion.engine.generative_model import GenerativeModel
+from humalion.engine.generative_model import GenerativeModel
 import requests
 
 

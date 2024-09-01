@@ -2,7 +2,7 @@ from os import PathLike
 from pathlib import Path
 import random
 
-from pygmalion.engine.generative_model import GenerativeModel
+from humalion.engine.generative_model import GenerativeModel
 
 
 class RandomLocalPhotoGenerativeModel(GenerativeModel):
