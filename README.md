@@ -30,10 +30,10 @@
 
 ## Installation
 
-You can install _Pygma_ via [pip] from [PyPI]:
+You can install _Humalion_ via [pip] from [PyPI]:
 
 ```console
-$ pip install pygma
+$ pip install humalion
 ```
 
 ## Usage
@@ -48,7 +48,7 @@ To learn more, see the [Contributor Guide].
 ## License
 
 Distributed under the terms of the [Apache 2.0 license][license],
-_Pygma_ is free and open source software.
+_Humalion_ is free and open source software.
 
 ## Issues
 
