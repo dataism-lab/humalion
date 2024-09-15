@@ -62,7 +62,7 @@ class FaceShape(str, Enum):
     RECTANGLE = "rectangle"
 
 
-class BodyShape(Enum):
+class BodyShape(str, Enum):
     """
     TRIANGLE: This body shape typically has wider hips and shoulders that are narrower in comparison.
     COLUMN: This body shape has hardly any difference in width between the shoulders, waist, or hips.
@@ -79,6 +79,13 @@ class BodyShape(Enum):
     INVERTED_TRIANGLE = "inverted triangle"
     HOURGLASS = "hourglass"
     FULL_HOURGLASS = "full hourglass"
+
+
+class EyesColor(str, Enum):
+    BLUE = "blue"
+    BROWN = "brown"
+    GREEN = "green"
+    GREY = "grey"
 
 
 class Persona(ABSPersona):
@@ -103,6 +110,7 @@ class Persona(ABSPersona):
         prompt(): Returns the full prompt for the persona.
 
     """
+
     def __init__(
             self,
             name: str | None = None,
@@ -113,6 +121,7 @@ class Persona(ABSPersona):
             hair_color: str = 'blonde',
             hair_style: str = '',
             face_shape: FaceShape = FaceShape.DIAMOND,
+            eyes_color: EyesColor | None = None,
             body_shape: BodyShape = BodyShape.COLUMN,
             height: int = 180,
             clothes: str = '',
@@ -143,6 +152,7 @@ class Persona(ABSPersona):
         self.hair_color = hair_color
         self.hair_style = hair_style
         self.face_shape = face_shape
+        self.eyes_color = eyes_color
         self.body_shape = body_shape
         self.height = height
         self.clothes = clothes
@@ -195,6 +205,8 @@ class Persona(ABSPersona):
         prompt += f"{self.face_shape.value} face shape, "
         prompt += f"{self.body_shape.value} body shape, "
         prompt += f"{self.height} cm tall, "
+        if self.eyes_color:
+            prompt += f"{self.eyes_color.value} eyes color, "
         if self.clothes:
             prompt += f"wearing {self.clothes}, "
         if self.additional_parameters:
