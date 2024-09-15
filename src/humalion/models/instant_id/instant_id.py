@@ -21,7 +21,6 @@ from src.humalion.engine.face_embedding_model import FaceEmbeddingModel
 from src.humalion.models.instant_id.face_analysis import FixedFaceAnalysis
 from src.humalion.utils.github import github_download_file
 from src.humalion.utils.path import posix_to_pypath
-from .pipeline_stable_diffusion_xl_instantid import StableDiffusionXLInstantIDPipeline, draw_kps
 from ...engine.face_swapper import FaceSwapperModel
 
 
@@ -124,8 +123,9 @@ class InstantID(FaceSwapperModel):
         self.pbar.update(15)
 
         self.pbar.set_description("Downloading and preparing FaceAnalysis...")
-        self.face_detector = FixedFaceAnalysis(name='antelopev2', root=self.BASE_RESOURCE_DIR,
-                                          providers=['CUDAExecutionProvider', 'CPUExecutionProvider'])
+        self.face_detector = FixedFaceAnalysis(
+            name='antelopev2', root=self.BASE_RESOURCE_DIR, providers=['CUDAExecutionProvider', 'CPUExecutionProvider']
+        )
         self.pbar.update(30)
         self.face_detector.prepare(ctx_id=0, det_size=(640, 640))
         self.pbar.set_description("Preparing ControlNet...")
@@ -137,6 +137,8 @@ class InstantID(FaceSwapperModel):
 
         self.pbar.set_description("Downloading SDXL Unstable Diffusers by YamerMIX_v8'...")
         base_model = 'wangqixun/YamerMIX_v8'  # from https://civitai.com/models/84040?modelVersionId=196039
+
+        from .pipeline_stable_diffusion_xl_instantid import StableDiffusionXLInstantIDPipeline
         self.pipeline = StableDiffusionXLInstantIDPipeline.from_pretrained(
             base_model,
             controlnet=self.controlnet,
@@ -151,7 +153,9 @@ class InstantID(FaceSwapperModel):
         self.pipeline.load_ip_adapter_instantid(os.path.join(self.models_weight_path, self.IP_ADAPTER_FILENAME))
         self.pbar.update(100)
 
-    def swap_face(self, source_image_path):
+    def swap_face(self, source_image_path) -> str:
+        from .pipeline_stable_diffusion_xl_instantid import draw_kps
+
         source_image = load_image(source_image_path)
 
         # prepare face emb
@@ -174,4 +178,4 @@ class InstantID(FaceSwapperModel):
         file_ext = '.jpg'
         filepath = Path(self.output_dir) / (uuid.uuid4().hex + file_ext)
         image.save(filepath)
-        return filepath
+        return filepath.as_posix()
