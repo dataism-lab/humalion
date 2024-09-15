@@ -1,15 +1,15 @@
-import base64
-import uuid
 import os
 
 from requests import Response
 
 from src.humalion.engine.generative_model import GenerativeModel
-from abc import ABC, abstractmethod
+from abc import ABC, abstractmethod, ABCMeta
 import requests
 
+from src.humalion.services.mixins import CheckOrCreateDirMixin
 
-class StabilityAI(GenerativeModel, ABC):
+
+class StabilityAI(GenerativeModel, CheckOrCreateDirMixin, ABC, metaclass=ABCMeta):
     BASE_PROMPT_PREFIX = "High-definition, full-body portrait photograph of a "
     BASE_PROMPT_SUFFIX = """ suitable for a popular Instagram post. 
         Cinematic composition, professional color grading, film grain, atmospheric."""
@@ -32,11 +32,7 @@ class StabilityAI(GenerativeModel, ABC):
             "Authorization": f"Bearer {api_key}"
         }
         self.output_dir = output_dir
-        self._check_output_dir()
-
-    def _check_output_dir(self):
-        if not os.path.exists(self.output_dir):
-            os.makedirs(self.output_dir)
+        self._check_dir(self.output_dir)
 
     def _cover_prompt(self, prompt: str) -> str:
         return f'{self.base_prompt_prefix} {prompt} {self.base_prompt_suffix}'
@@ -45,13 +41,8 @@ class StabilityAI(GenerativeModel, ABC):
     def _request_data(self, prompt: str) -> dict:
         pass
 
-    @property
     @abstractmethod
-    def _text_to_img_url(self):
-        pass
-
-    @abstractmethod
-    def _generate_response(self, data: dict):
+    def _generate_response(self, data: dict, *args, **kwargs):
         pass
 
     @abstractmethod
@@ -60,7 +51,6 @@ class StabilityAI(GenerativeModel, ABC):
 
     def _stability_generate_photo(self, prompt: str) -> str:
         data = self._request_data(prompt=prompt)
-        print(data)
         response = self._generate_response(data)
 
         if response.status_code != 200:

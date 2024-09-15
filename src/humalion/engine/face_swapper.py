@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 
 class FaceSwapperModel(ABC):
     @abstractmethod
-    def swap_face(self, source_image) -> str:
+    def swap_face(self, source_image_path: str) -> str:
         pass
 
     @abstractmethod

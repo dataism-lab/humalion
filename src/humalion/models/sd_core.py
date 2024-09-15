@@ -64,7 +64,7 @@ class SDCore(StabilityAI, GenerativeModel):
             str: The filepath of the saved image.
 
         """
-        filename = f'{uuid.uuid4().hex}.png'
+        filename = f'{uuid.uuid4().hex}.jpeg'
         filepath = os.path.join(self.output_dir, filename)
         with open(filepath, 'wb') as file:
             file.write(response.content)
