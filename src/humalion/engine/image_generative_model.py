@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class GenerativeModel(ABC):
+class ImageGenerativeModel(ABC):
     @abstractmethod
     def generate_photo(self, prompt: str) -> str:
         """

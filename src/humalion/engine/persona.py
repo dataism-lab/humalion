@@ -3,6 +3,10 @@ from enum import Enum
 from faker import Faker
 import random
 
+from pydantic import BaseModel, PositiveInt, Field
+
+from src.humalion.utils.enum import StrEnum
+
 
 class ABSPersona(ABC):
     @abstractmethod
@@ -10,12 +14,12 @@ class ABSPersona(ABC):
         pass
 
 
-class Gender(str, Enum):
+class Gender(StrEnum):
     MALE = 'male'
     FEMALE = 'female'
 
 
-class SkinTone(str, Enum):
+class SkinTone(StrEnum):
     PORCLEAN = 'porclean'
     IVORY = 'ivory'
     WARM_IVORY = 'warm_ivory'
@@ -33,27 +37,27 @@ class SkinTone(str, Enum):
     CHOCOLATE = 'chocolate'
 
 
-class Beard(str, Enum):
+class Beard(StrEnum):
     CLEAN_SHAVED = 'clean shaved'
-    CIRCLE_BEARD = 'A chin patch and a mustache that forms a circle'
-    ROYALE_BEARD = 'A mustache anchored by a chin strip'
-    GOATEE = 'A small beard that elongates the chin'
-    PETITE_GOATEE = 'A small beard that elongates the chin'
-    VAN_DYKE_BEARD = 'A full goatee with detached mustache'
-    SHORT_BOXED_BEARD = 'A short beard with thin, neatly trimmed sides'
-    BALBO_BEARD = 'A beard without sideburns and a trimmed, floating mustache'
-    ANCHOR_BEARD = 'A pointed beard that traces the jawline, paired with a mustache'
-    CHEVRON = 'A mustache that covers your entire top lip'
-    THREE_DAY_BEARD = 'A closely trimmed beard that simulates 3 days of stubble'
-    HORSESHOE_MUSTACHE = 'A mustache with long bars pointing downward'
-    ORIGINAL_STACHE = 'A trim mustache that sits just above the top lip'
-    MUTTON_CHOPS_BEARD = 'Long sideburns that connect to a mustache'
-    GUNSLINGER_BEARD_AND_MUSTACHE = 'Flared sideburns paired with a horseshoe mustache'
-    CHIN_STRIP = 'A vertical line of hair across the chin'
-    CHIN_STRAP_STYLE_BEARD = 'A beard with no mustache that circles the chin'
+    CIRCLE_BEARD = 'circle beard: chin patch and a mustache that forms a circle'
+    ROYALE_BEARD = 'royale beard: mustache anchored by a chin strip'
+    GOATEE = 'goatee beard: small beard that elongates the chin'
+    PETITE_GOATEE = 'petite goatee beard: small beard that elongates the chin'
+    VAN_DYKE_BEARD = 'Van Dyke beard: full goatee with detached mustache'
+    SHORT_BOXED_BEARD = 'short boxed beard: short beard with thin, neatly trimmed sides'
+    BALBO_BEARD = 'balbo beard: beard without sideburns and a trimmed, floating mustache'
+    ANCHOR_BEARD = 'anchor beard: pointed beard that traces the jawline, paired with a mustache'
+    CHEVRON = 'chevron beard: mustache that covers your entire top lip'
+    THREE_DAY_BEARD = 'three days beard: closely trimmed beard that simulates 3 days of stubble'
+    HORSESHOE_MUSTACHE = 'horseshoe mustache: mustache with long bars pointing downward'
+    ORIGINAL_STACHE = 'original stache: trim mustache that sits just above the top lip'
+    MUTTON_CHOPS_BEARD = 'mutton chops beard: long sideburns that connect to a mustache'
+    GUNSLINGER_BEARD_AND_MUSTACHE = 'gunslinger beard and mustache: flared sideburns paired with a horseshoe mustache'
+    CHIN_STRIP = 'chin strip: vertical line of hair across the chin'
+    CHIN_STRAP_STYLE_BEARD = 'chin strap style beard: beard with no mustache that circles the chin'
 
 
-class FaceShape(str, Enum):
+class FaceShape(StrEnum):
     OVAL = "oval"
     ROUND = "round"
     SQUARE = "square"
@@ -62,7 +66,7 @@ class FaceShape(str, Enum):
     RECTANGLE = "rectangle"
 
 
-class BodyShape(str, Enum):
+class BodyShape(StrEnum):
     """
     TRIANGLE: This body shape typically has wider hips and shoulders that are narrower in comparison.
     COLUMN: This body shape has hardly any difference in width between the shoulders, waist, or hips.
@@ -81,14 +85,91 @@ class BodyShape(str, Enum):
     FULL_HOURGLASS = "full hourglass"
 
 
-class EyesColor(str, Enum):
+class EyesColor(StrEnum):
     BLUE = "blue"
     BROWN = "brown"
     GREEN = "green"
     GREY = "grey"
 
 
-class Persona(ABSPersona):
+class HairCut(StrEnum):
+    BALD = "no hair, bald"
+    SHORT = "short hairstyle"
+    MEDIUMSTRAIGHT = "medium straight hair"
+    MEDIUMCURLY = "medium curly hair"
+    MEDIUMWAVY = "medium wavy hair"
+    LONGSTRAIGHT = "long straight hair"
+    LONGCURLY = "long curly hair"
+    LONGWAVY = "long wavy hair"
+    PONYTAIL = "ponytail"
+
+
+class ViewType(StrEnum):
+    PORTRAIT = "portrait view"
+    HADNSHOULDERS = "head and shoulders view"
+    HALFBODY = "upper body portrait view"
+    FULLBODY = "full body view"
+
+
+class HairColor(StrEnum):
+    BALD = ""
+    BLACK = "black hair"
+    BROWN = "brown hair"
+    BLOND = "blond hair"
+    RED = "red hair"
+    GREY = "grey hair"
+    WHITE = "white hair"
+
+
+class Face(BaseModel):
+    """
+    Attributes:
+        beard (Beard): The presence of beard on the persona.
+        hair_color (str): The hair color of the persona.
+        hair_style (str): The hairstyle of the persona.
+        face_shape (FaceShape): The face shape of the persona.
+        eyes_color (EyesColor): The eyes color of the persona.
+    """
+    beard: Beard | str | None = Field(
+        description="Correctly assign beard of person on the image", default=Beard.CLEAN_SHAVED
+    )
+    hair_color: HairColor | str | None = Field(
+        description="Correctly assign hair color of person on the image", default=None
+    )
+    hair_style: HairCut | str | None = Field(
+        description="Correctly assign haircut type of person on the image or describe it by yourself", default=None
+    )
+    face_shape: FaceShape | str = Field(
+        description="Correctly assign face shape of person on the image", default=FaceShape.DIAMOND
+    )
+    eyes_color: EyesColor | str | None = Field(
+        description="Correctly assign eyes color of person on the image", default=None
+    )
+
+
+class Body(BaseModel):
+    """
+    Attributes:
+        height (int): The height of the persona in centimeters.
+        body_shape (BodyShape): The body shape of the persona.
+        view (ViewType): The view type of the persona.
+        clothes (str): The type of clothes worn by the persona.
+    """
+    height: PositiveInt | None = Field(
+        description="Correctly assign body height of person on the image in centimeters", default=None
+    )
+    view: ViewType | None = Field(
+        description="Correctly assign view of person on the image"
+    )
+    body_shape: BodyShape | None = Field(
+        description="Correctly assign body shape of person on the image", default=None
+    )
+    clothes: str | None = Field(
+        description="Correctly describe the clothes the person is wearing on the image", default=None
+    )
+
+
+class Persona(ABSPersona, BaseModel):
     """
     A class representing a persona by parameters.
 
@@ -96,13 +177,8 @@ class Persona(ABSPersona):
         name (str): The name of the persona.
         gender (Gender): The gender of the persona.
         skintone (SkinTone): The skin tone of the persona.
-        beard (Beard): The presence of beard on the persona.
-        hair_color (str): The hair color of the persona.
-        hair_style (str): The hairstyle of the persona.
-        face_shape (FaceShape): The face shape of the persona.
-        body_shape (BodyShape): The body shape of the persona.
-        height (int): The height of the persona in centimeters.
-        clothes (str): The type of clothes worn by the persona.
+        face (Face): Face describing the persona.
+        body (Body): Body describing the persona.
         additional_parameters (dict): Additional parameters specific to the persona.
         random_person (bool): generate a random persona.
 
@@ -110,54 +186,60 @@ class Persona(ABSPersona):
         prompt(): Returns the full prompt for the persona.
 
     """
+    name: str | None = None
+    gender: Gender | None = Field(
+        description="Correctly assign gender of person on the image", default=None
+    )
+    age: PositiveInt = Field(
+        description="Look carefully at the main person on the image and describe its age"
+    )
+    skintone: SkinTone | None = Field(
+        description="Correctly assign colour of skin of person on the image", default=None
+    )
+    race: str | None = Field(
+        description="Look carefully at the main person on the image and describe its race", default=None
+    )
+    face: Face = Field(
+        description="Look carefully at the main person on the image and describe its face"
+    )
+    body: Body = Field(
+        description="Look carefully at the main person on the image and describe its body"
+    )
+    additional_parameters: str | None = Field(
+        description="Look carefully at the main person on the image and describe parameters "
+                    "that are not basic, but are important in your opinion, what distinguishes this person."
+                    " You can leave this field blank.", default=None
+    )
+    random_person: bool = False
 
-    def __init__(
-            self,
-            name: str | None = None,
-            gender: Gender | None = None,
-            age: int | None = None,
-            skintone: SkinTone | None = None,
-            beard: Beard = Beard.CLEAN_SHAVED,
-            hair_color: str = 'blonde',
-            hair_style: str = '',
-            face_shape: FaceShape = FaceShape.DIAMOND,
-            eyes_color: EyesColor | None = None,
-            body_shape: BodyShape = BodyShape.COLUMN,
-            height: int = 180,
-            clothes: str = '',
-            race: str | None = None,
-            additional_parameters: dict | None = None,
-            random_person: bool = False,
-    ):
+    def __init__(self, *args, **kwargs):
+        random_person = kwargs.pop("random_person", False)
+
         if random_person:
             faker = Faker()
-            name = faker.name()
+            kwargs['name'] = faker.name()
             gender = random.choice(list(Gender))
-            age = random.randint(12, 90)
-            skintone = random.choice(list(SkinTone))
-            beard = random.choice(list(Beard))
-            height = random.randint(150, 210)
-        else:
-            if not all((name, gender, age)):
-                raise ValueError("All mandatory parameters must be given (name, gender, age).")
+            kwargs['gender'] = gender
+            kwargs['age'] = random.randint(13, 90)
+            kwargs['skintone'] = random.choice(list(SkinTone))
+            haircut = random.choice(list(HairCut))
+            kwargs['face'] = Face(
+                face_shape=random.choice(list(FaceShape)),
+                beard=random.choice(list(Beard)) if gender == Gender.MALE else None,
+                hair=haircut,
+                hair_color=random.choice(list(HairColor)) if haircut != HairCut.BALD else None,
+                eyes_color=random.choice(list(EyesColor))
+            )
+            kwargs['body'] = Body(
+                height=random.randint(140, 210),
+                view=random.choice(list(ViewType)),
+                body_shape=random.choice(list(BodyShape)),
+            )
+        # else:
+        #     if not all((kwargs['name'] | args[0], kwargs['gender'] | args[1], kwargs['age'] | args[2])):
+        #         raise ValueError("All mandatory parameters must be given (name, gender, age).")
 
-        if age <= 0:
-            raise ValueError("Age must be positive")
-
-        self.name = name
-        self.gender = gender
-        self.age = age
-        self.skintone = skintone
-        self.beard = beard
-        self.hair_color = hair_color
-        self.hair_style = hair_style
-        self.face_shape = face_shape
-        self.eyes_color = eyes_color
-        self.body_shape = body_shape
-        self.height = height
-        self.clothes = clothes
-        self.race = race
-        self.additional_parameters = additional_parameters
+        super().__init__(*args, **kwargs)
 
     def _gender_with_age(self):
         prompt = "person"
@@ -195,20 +277,20 @@ class Persona(ABSPersona):
         prompt = self.race if self.race is not None else ""
         prompt += self._gender_with_age()
         if self.skintone:
-            prompt += f" with {self.skintone.value} skin tone, "
-        if self.beard != Beard.CLEAN_SHAVED and self.gender == Gender.MALE:
-            prompt += f"{self.beard.value} beard, "
-
-        prompt += f"{self.hair_color} hair color, "
-        if self.hair_style:
-            prompt += f"{self.hair_style} hairstyle, "
-        prompt += f"{self.face_shape.value} face shape, "
-        prompt += f"{self.body_shape.value} body shape, "
-        prompt += f"{self.height} cm tall, "
-        if self.eyes_color:
-            prompt += f"{self.eyes_color.value} eyes color, "
-        if self.clothes:
-            prompt += f"wearing {self.clothes}, "
+            prompt += f" with {self.skintone} skin tone, "
+        if self.face.beard != Beard.CLEAN_SHAVED and self.gender == Gender.MALE:
+            prompt += f"{self.face.beard} beard, "
+        if self.face.hair_color:
+            prompt += f"{self.face.hair_color} hair color, "
+        if self.face.hair_style:
+            prompt += f"{self.face.hair_style} hairstyle, "
+        prompt += f"{self.face.face_shape} face shape, "
+        prompt += f"{self.body.body_shape} body shape, "
+        prompt += f"{self.body.height} cm tall, "
+        if self.face.eyes_color:
+            prompt += f"{self.face.eyes_color} eyes color, "
+        if self.body.clothes:
+            prompt += f"wearing {self.body.clothes}, "
         if self.additional_parameters:
             prompt += ". "
             for key, value in self.additional_parameters.items():

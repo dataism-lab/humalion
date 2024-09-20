@@ -36,6 +36,9 @@ onnxruntime = "^1.19.0"
 jupyter = "^1.1.1"
 replicate = "^0.32.1"
 notebook = "^7.2.2"
+instructor = "^1.4.2"
+backoff = "^2.2.1"
+lumaai = "^1.0.1"
 
 [tool.poetry.dev-dependencies]
 Pygments = ">=2.10.0"

@@ -11,4 +11,8 @@ class MetaEnum(EnumMeta):
 
 
 class StrEnum(str, Enum, metaclass=MetaEnum):
-    pass
+    def __str__(self) -> str:
+        return self.value
+
+    def __repr__(self) -> str:
+        return self.value

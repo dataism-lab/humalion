@@ -1,9 +1,12 @@
+from dataclasses import dataclass
 from typing import Any
 
+import numpy as np
 
-class FaceEmbedding:
-    def __init__(self, source_image: list[Any], embedding=None):
-        self.embedding = embedding
-        self.source_image = source_image
+@dataclass
+class PersonEmbedding:
+    face_embedding: np.ndarray
+    appearance_embedding: np.ndarray
+
 
 
