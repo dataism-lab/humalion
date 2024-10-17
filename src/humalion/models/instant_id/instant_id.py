@@ -22,9 +22,10 @@ from src.humalion.engine.face_embedding_model import FaceEmbeddingModel
 from src.humalion.models.instant_id.face_analysis import FixedFaceAnalysis
 from src.humalion.utils.github import github_download_file
 from src.humalion.utils.path import posix_to_pypath
-from .pipeline_stable_diffusion_xl_instantid import draw_kps
 from ...engine.face_swapper import FaceSwapperModel
 from ...utils.mixins import SaveImageWithUniqueNameMixin
+
+draw_kps = None
 
 
 class InstantID(FaceSwapperModel, SaveImageWithUniqueNameMixin):
@@ -154,7 +155,10 @@ class InstantID(FaceSwapperModel, SaveImageWithUniqueNameMixin):
 
         self._pbar.set_description("Downloading RealVisXL_V4.0_Lightning...")
 
+        global draw_kps
         from .pipeline_stable_diffusion_xl_instantid import StableDiffusionXLInstantIDPipeline
+        from .pipeline_stable_diffusion_xl_instantid import draw_kps as imported_draw_kps
+        draw_kps = imported_draw_kps
         self._pipeline = StableDiffusionXLInstantIDPipeline.from_pretrained(
             pretrained_model_name_or_path=self.REALIVIZ_NAME,
             controlnet=self.controlnet,
@@ -169,32 +173,32 @@ class InstantID(FaceSwapperModel, SaveImageWithUniqueNameMixin):
         self._pipeline.load_ip_adapter_instantid(os.path.join(self.models_weight_path, self.IP_ADAPTER_FILENAME))
         self._pbar.update(100)
 
-    def swap_face_from_docs(self, source_image_path, face_emb: np.ndarray) -> str:
-        from .pipeline_stable_diffusion_xl_instantid import draw_kps
-
-        source_image = load_image(source_image_path)
-
-        # prepare face emb
-        face_info = self.face_detector.get(cv2.cvtColor(np.array(source_image), cv2.COLOR_RGB2BGR))
-        face_info = sorted(face_info, key=lambda x: (x['bbox'][2] - x['bbox'][0]) * (x['bbox'][3] - x['bbox'][1]))[
-            -1]  # only use the maximum face
-        face_emb = face_info['embedding']
-        face_kps = draw_kps(source_image, face_info['kps'])  # noqa: F821
-        prompt = "highly detailed, sharp focus, ultra sharpness, cinematic"
-        negative_prompt = ""
-
-        image: PIL.Image = self._pipeline(
-            prompt,
-            negative_prompt=negative_prompt,
-            image_embeds=face_emb,
-            image=face_kps,
-            controlnet_conditioning_scale=0.8,
-            ip_adapter_scale=0.8,
-        ).images[0]
-        file_ext = '.jpg'
-        filepath = Path(self.output_dir) / (uuid.uuid4().hex + file_ext)
-        image.save(filepath)
-        return filepath.as_posix()
+    # def swap_face_from_docs(self, source_image_path, face_emb: np.ndarray) -> str:
+    #     global draw_kps
+    #
+    #     source_image = load_image(source_image_path)
+    #
+    #     # prepare face emb
+    #     face_info = self.face_detector.get(cv2.cvtColor(np.array(source_image), cv2.COLOR_RGB2BGR))
+    #     face_info = sorted(face_info, key=lambda x: (x['bbox'][2] - x['bbox'][0]) * (x['bbox'][3] - x['bbox'][1]))[
+    #         -1]  # only use the maximum face
+    #     face_emb = face_info['embedding']
+    #     face_kps = draw_kps(source_image, face_info['kps'])  # noqa: F821
+    #     prompt = "highly detailed, sharp focus, ultra sharpness, cinematic"
+    #     negative_prompt = ""
+    #
+    #     image: PIL.Image = self._pipeline(
+    #         prompt,
+    #         negative_prompt=negative_prompt,
+    #         image_embeds=face_emb,
+    #         image=face_kps,
+    #         controlnet_conditioning_scale=0.8,
+    #         ip_adapter_scale=0.8,
+    #     ).images[0]
+    #     file_ext = '.jpg'
+    #     filepath = Path(self.output_dir) / (uuid.uuid4().hex + file_ext)
+    #     image.save(filepath)
+    #     return filepath.as_posix()
 
     def _random_pose(self, gender: FaceSwapperModel.Gender) -> np.ndarray:
         if gender == FaceSwapperModel.Gender.FEMALE:
@@ -213,6 +217,7 @@ class InstantID(FaceSwapperModel, SaveImageWithUniqueNameMixin):
             prompt: str,
             gender: FaceSwapperModel.Gender | str
     ) -> str:
+        global draw_kps
         if isinstance(gender, str):
             if gender not in FaceSwapperModel.Gender:
                 raise ValueError(f"Gender must be one of {[*FaceSwapperModel.Gender]}")

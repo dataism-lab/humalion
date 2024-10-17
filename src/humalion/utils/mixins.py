@@ -33,7 +33,6 @@ class SaveImageWithUniqueNameMixin:
         return file_path.as_posix()
 
 
-
 class DownloadTempFileMixin(DownloadFileMixin, CheckOrCreateDirMixin):
     DOWNLOAD_DIR = Path(".tmp_download/")
 
