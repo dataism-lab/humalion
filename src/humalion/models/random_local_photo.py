@@ -2,10 +2,10 @@ from os import PathLike
 from pathlib import Path
 import random
 
-from src.humalion.engine.generative_model import GenerativeModel
+from src.humalion.engine.image_generative_model import ImageGenerativeModel
 
 
-class RandomLocalPhotoGenerativeModel(GenerativeModel):
+class RandomLocalPhotoGenerativeModel(ImageGenerativeModel):
     def __init__(self, photos_path: str | PathLike):
         super().__init__()
         self.photos_path = photos_path
