@@ -104,9 +104,9 @@ class SyntheticDHuman(ABCDHuman):
         print(self.persona.prompt())
 
     def generate_photo(self, prompt: str) -> str:
-        source_img_path = self.generative_model.generate_photo(prompt=prompt)
+        # source_img_path = self.generative_model.generate_photo(prompt=prompt)
         result_img_path = self.face_swap_model.swap_face(
-            source_image_path=source_img_path, face_emb=self.face_embeddings
+            source_image_path=self.source_photo_path, face_emb=self.face_embeddings
         )
         return result_img_path
 
