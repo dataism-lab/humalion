@@ -1,11 +1,11 @@
 from abc import ABC
 
-from src.humalion.engine.generative_model import GenerativeModel
+from src.humalion.engine.image_generative_model import ImageGenerativeModel
 from src.humalion.services.replica import ReplicaService
 from src.humalion.utils.enum import StrEnum
 
 
-class FluxReplica(ReplicaService, GenerativeModel, ABC):
+class FluxReplica(ReplicaService, ImageGenerativeModel, ABC):
     output_dir = 'output/flux_replica'
 
     class Models(StrEnum):

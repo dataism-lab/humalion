@@ -1,5 +1,11 @@
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
+from collections import Counter
+from copy import deepcopy
 from enum import Enum
+from typing import Self, Type, Iterable
+
 from faker import Faker
 import random
 
@@ -11,6 +17,11 @@ from src.humalion.utils.enum import StrEnum
 class ABSPersona(ABC):
     @abstractmethod
     def prompt(self) -> str:
+        pass
+
+    @classmethod
+    @abstractmethod
+    def mean(cls, people: Iterable['ABSPersona']) -> 'ABSPersona':
         pass
 
 
@@ -210,7 +221,14 @@ class Persona(ABSPersona, BaseModel):
                     "that are not basic, but are important in your opinion, what distinguishes this person."
                     " You can leave this field blank.", default=None
     )
-    random_person: bool = False
+
+    random_person: bool = Field(default=False, exclude=True)
+
+    def __new__(cls, *args, **kwargs):
+        cls._main_params = ['name', 'gender', 'skintone', 'race']
+        cls._body_params = [p_name for p_name in Body.schema().get("properties").keys() if p_name != 'height']
+        cls._face_params = list(Face.schema().get("properties").keys())
+        return super().__new__(cls)
 
     def __init__(self, *args, **kwargs):
         random_person = kwargs.pop("random_person", False)
@@ -292,11 +310,64 @@ class Persona(ABSPersona, BaseModel):
         if self.body.clothes:
             prompt += f"wearing {self.body.clothes}, "
         if self.additional_parameters:
-            prompt += ". "
-            for key, value in self.additional_parameters.items():
-                prompt += f"{key} is {value}, "
+            prompt += f". {self.additional_parameters}"
 
         return prompt
+
+    @staticmethod
+    def _most_common_params(counter: dict[str, Counter]) -> dict[str, str]:
+        mcp = dict()
+        for p_name, p_counter in counter.items():
+            if p_counter:
+                most_common = p_counter.most_common(1)
+                mcp[p_name] = most_common[0][0]
+            else:
+                mcp[p_name] = None
+
+        return mcp
+
+    @classmethod
+    def _default_counter(cls):
+        return {
+            "main": {p_name: Counter() for p_name in cls._main_params},
+            'body': {p_name: Counter() for p_name in cls._body_params},
+            'face': {p_name: Counter() for p_name in cls._face_params},
+        }
+
+    @classmethod
+    def mean(cls, people: Iterable['Persona']) -> 'Persona':
+        counter = cls._default_counter()
+        age_list = []
+        height_list = []
+        # count values
+        for person in people:
+            age_list.append(person.age)
+            height_list.append(person.body.height)
+            for param_name in cls._main_params:
+                param = getattr(person, param_name, None)
+                if param:
+                    counter["main"][param_name].update((param,))
+
+            for param_name in cls._body_params:
+                param = getattr(getattr(person, 'body'), param_name)
+                if param:
+                    counter["body"][param_name].update((param,))
+
+            for param_name in cls._face_params:
+                param = getattr(getattr(person, 'face'), param_name)
+                if param:
+                    counter["face"][param_name].update((param,))
+
+        # create mean person
+        main_params = cls._most_common_params(counter['main'])
+        body_params = cls._most_common_params(counter['body'])
+        face_params = cls._most_common_params(counter['face'])
+        mean_age = sum(age_list) // len(age_list)
+        mean_height = sum(height_list) // len(height_list)
+        mean_person = cls(
+            age=mean_age, body=Body(**body_params, height=mean_height), face=Face(**face_params), **main_params
+        )
+        return mean_person
 
     def __str__(self):
         return self.prompt()

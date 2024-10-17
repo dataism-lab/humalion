@@ -1,15 +1,13 @@
-import os
-
 from requests import Response
 
-from src.humalion.engine.generative_model import GenerativeModel
+from src.humalion.engine.image_generative_model import ImageGenerativeModel
 from abc import ABC, abstractmethod, ABCMeta
 import requests
 
-from src.humalion.services.mixins import CheckOrCreateDirMixin
+from src.humalion.utils.mixins import CheckOrCreateDirMixin
 
 
-class StabilityAI(GenerativeModel, CheckOrCreateDirMixin, ABC, metaclass=ABCMeta):
+class StabilityAI(ImageGenerativeModel, CheckOrCreateDirMixin, ABC, metaclass=ABCMeta):
     BASE_PROMPT_PREFIX = "High-definition, full-body portrait photograph of a "
     BASE_PROMPT_SUFFIX = """ suitable for a popular Instagram post. 
         Cinematic composition, professional color grading, film grain, atmospheric."""

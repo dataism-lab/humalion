@@ -1,5 +1,6 @@
 import importlib
 import os
+import random
 import uuid
 from abc import ABC, abstractmethod
 from pathlib import Path
@@ -21,10 +22,12 @@ from src.humalion.engine.face_embedding_model import FaceEmbeddingModel
 from src.humalion.models.instant_id.face_analysis import FixedFaceAnalysis
 from src.humalion.utils.github import github_download_file
 from src.humalion.utils.path import posix_to_pypath
+from .pipeline_stable_diffusion_xl_instantid import draw_kps
 from ...engine.face_swapper import FaceSwapperModel
+from ...utils.mixins import SaveImageWithUniqueNameMixin
 
 
-class InstantID(FaceSwapperModel):
+class InstantID(FaceSwapperModel, SaveImageWithUniqueNameMixin):
     BASE_RESOURCE_DIR = Path('humalion_resources')
     CONTROLNET_DIR = Path("ControlNetModel")
     CONTROLNET_CONFIG_FILENAME = Path("config.json")
@@ -49,12 +52,19 @@ class InstantID(FaceSwapperModel):
         IP_ADAPTER_UTILS_FILENAME
     ]
     DEFAULT_OUTPUT_DIR = 'output/instant_id'
+    PORTRAIT_SIZE = (1280, 1280)
+    PARENT_PATH = Path(__file__).resolve().parent
+    MEN_POSES_PATH = PARENT_PATH / 'poses' / 'men.npy'
+    WOMEN_POSES_PATH = PARENT_PATH / 'poses' / 'women.npy'
+    REALIVIZ_NAME = "SG161222/RealVisXL_V4.0_Lightning"  # https://huggingface.co/SG161222/RealVisXL_V4.0_Lightning
+    PIPELINE_NUM_STEPS = 8
 
     def __init__(
             self,
             models_weight_path: str = './checkpoints',
             output_dir: str = DEFAULT_OUTPUT_DIR,
             use_cuda: bool = False,
+            negative_prompt: str = ''
     ):
         self.use_cuda = use_cuda
         self.models_weight_path = models_weight_path
@@ -66,8 +76,11 @@ class InstantID(FaceSwapperModel):
 
         self.face_detector = None
         self.controlnet = None
-        self.pipeline = None
-        self.pbar = tqdm(total=100)
+        self._pipeline = None
+        self._poses_men = None
+        self._poses_women = None
+        self.negative_prompt = negative_prompt
+        self._pbar = tqdm(total=100)
         self.prepare_model()
 
     def _check_or_download_models_files(self, force_download: bool = False):
@@ -114,46 +127,49 @@ class InstantID(FaceSwapperModel):
                 name=f'{posix_to_pypath(utils_path)}.{cls.IP_ADAPTER_GITHUB_PATH}.{ip_adapter_filename.stem}')
         sub_prbar.update(2)
 
+    def _load_poses(self):
+        self._poses_men = np.load(self.MEN_POSES_PATH)
+        self._poses_women = np.load(self.WOMEN_POSES_PATH)
+
     def prepare_model(self, force_download: bool = False):
-        self.pbar.set_description("Preparing InstantID...")
+        self._pbar.set_description("Preparing InstantID...")
         self._check_or_download_models_files(force_download)
-        self.pbar.update(10)
+        self._pbar.update(10)
 
         self._download_instantid_repo()
-        self.pbar.update(15)
+        self._pbar.update(15)
 
-        self.pbar.set_description("Downloading and preparing FaceAnalysis...")
+        self._pbar.set_description("Downloading and preparing FaceAnalysis...")
         self.face_detector = FixedFaceAnalysis(
             name='antelopev2', root=self.BASE_RESOURCE_DIR, providers=['CUDAExecutionProvider', 'CPUExecutionProvider']
         )
-        self.pbar.update(30)
+        self._pbar.update(30)
         self.face_detector.prepare(ctx_id=0, det_size=(640, 640))
-        self.pbar.set_description("Preparing ControlNet...")
+        self._pbar.set_description("Preparing ControlNet...")
         self.controlnet = ControlNetModel.from_pretrained(
             os.path.join(self.models_weight_path, self.CONTROLNET_DIR),
             torch_dtype=torch.float16
         )
-        self.pbar.update(40)
+        self._pbar.update(40)
 
-        self.pbar.set_description("Downloading SDXL Unstable Diffusers by YamerMIX_v8'...")
-        base_model = 'wangqixun/YamerMIX_v8'  # from https://civitai.com/models/84040?modelVersionId=196039
+        self._pbar.set_description("Downloading RealVisXL_V4.0_Lightning...")
 
         from .pipeline_stable_diffusion_xl_instantid import StableDiffusionXLInstantIDPipeline
-        self.pipeline = StableDiffusionXLInstantIDPipeline.from_pretrained(
-            base_model,
+        self._pipeline = StableDiffusionXLInstantIDPipeline.from_pretrained(
+            pretrained_model_name_or_path=self.REALIVIZ_NAME,
             controlnet=self.controlnet,
             torch_dtype=torch.float16
         )
-        self.pbar.update(90)
-        self.pbar.set_description("Loading models to memory...")
+        self._pbar.update(90)
+        self._pbar.set_description("Loading models to memory...")
         if self.use_cuda and torch.cuda.is_available():
-            self.pipeline.cuda()
+            self._pipeline.cuda()
 
         # load adapter
-        self.pipeline.load_ip_adapter_instantid(os.path.join(self.models_weight_path, self.IP_ADAPTER_FILENAME))
-        self.pbar.update(100)
+        self._pipeline.load_ip_adapter_instantid(os.path.join(self.models_weight_path, self.IP_ADAPTER_FILENAME))
+        self._pbar.update(100)
 
-    def swap_face(self, source_image_path) -> str:
+    def swap_face_from_docs(self, source_image_path, face_emb: np.ndarray) -> str:
         from .pipeline_stable_diffusion_xl_instantid import draw_kps
 
         source_image = load_image(source_image_path)
@@ -167,7 +183,7 @@ class InstantID(FaceSwapperModel):
         prompt = "highly detailed, sharp focus, ultra sharpness, cinematic"
         negative_prompt = ""
 
-        image: PIL.Image = self.pipeline(
+        image: PIL.Image = self._pipeline(
             prompt,
             negative_prompt=negative_prompt,
             image_embeds=face_emb,
@@ -179,3 +195,47 @@ class InstantID(FaceSwapperModel):
         filepath = Path(self.output_dir) / (uuid.uuid4().hex + file_ext)
         image.save(filepath)
         return filepath.as_posix()
+
+    def _random_pose(self, gender: FaceSwapperModel.Gender) -> np.ndarray:
+        if gender == FaceSwapperModel.Gender.FEMALE:
+            idx = random.randint(0, self._poses_women.shape[0] - 1)
+            kps = self._poses_women[idx]
+        else:
+            idx = random.randint(0, self._poses_men.shape[0] - 1)
+            kps = self._poses_men[idx]
+
+        return kps
+
+    def swap_face(
+            self,
+            source_image_path,
+            face_emb: np.ndarray,
+            prompt: str,
+            gender: FaceSwapperModel.Gender | str
+    ) -> str:
+        if isinstance(gender, str):
+            if gender not in FaceSwapperModel.Gender:
+                raise ValueError(f"Gender must be one of {[*FaceSwapperModel.Gender]}")
+            else:
+                gender = FaceSwapperModel.Gender(gender)
+
+        empty_img = Image.new("RGB", self.PORTRAIT_SIZE, (0, 0, 0))
+        pose = self._random_pose(gender=gender)
+        face_kps = draw_kps(empty_img, pose)
+        self._pipeline.set_ip_adapter_scale(0.8)
+        pipeline_result = self._pipeline(
+            prompt=prompt,
+            negative_prompt=self.negative_prompt,
+            image_embeds=face_emb,
+            image=face_kps,
+            controlnet_conditioning_scale=0.5,
+            num_inference_steps=self.PIPELINE_NUM_STEPS,
+            guidance_scale=3.0,
+        )
+
+        if not pipeline_result:
+            raise ValueError(f"Error occured while swapping face on source image {source_image_path}")
+
+        image = pipeline_result[0]
+        image_path = self._save_image(self.output_dir, image)
+        return image_path

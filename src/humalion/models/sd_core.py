@@ -4,12 +4,12 @@ import uuid
 import requests
 from requests import Response
 
-from src.humalion.engine.generative_model import GenerativeModel
+from src.humalion.engine.image_generative_model import ImageGenerativeModel
 
 from src.humalion.services.stability_ai import StabilityAI
 
 
-class SDCore(StabilityAI, GenerativeModel):
+class SDCore(StabilityAI, ImageGenerativeModel):
     BASE_PROMPT_PREFIX = StabilityAI.BASE_PROMPT_PREFIX
     BASE_PROMPT_SUFFIX = StabilityAI.BASE_PROMPT_SUFFIX
     _text_to_img_url = f"{StabilityAI.API_HOST}/v2beta/stable-image/generate/core"

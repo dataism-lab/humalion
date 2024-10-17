@@ -1,9 +1,17 @@
 from abc import ABC, abstractmethod
 
+import numpy as np
+
+from src.humalion.utils.enum import StrEnum
+
 
 class FaceSwapperModel(ABC):
+    class Gender(StrEnum):
+        MALE = 'male'
+        FEMALE = 'female'
+
     @abstractmethod
-    def swap_face(self, source_image_path: str) -> str:
+    def swap_face(self, source_image_path: str, face_emb: np.ndarray, prompt: str, gender: Gender) -> str:
         pass
 
     @abstractmethod

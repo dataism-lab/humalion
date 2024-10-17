@@ -5,7 +5,7 @@ from typing import Any
 import replicate
 from PIL import Image
 
-from src.humalion.services.mixins import DownloadTempFileMixin
+from src.humalion.utils.mixins import DownloadTempFileMixin
 
 
 class ReplicaService(DownloadTempFileMixin):
