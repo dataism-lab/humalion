@@ -16,7 +16,7 @@ classifiers = [
 Changelog = "https://github.com/dataism-lab/humalion/releases"
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.10"
 click = ">=8.0.1"
 pydantic = "^2.8.2"
 aioboto3 = "^13.1.1"
