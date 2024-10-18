@@ -5,6 +5,7 @@ from abc import ABC, abstractmethod
 from collections import Counter
 from typing import Iterable
 
+import numpy as np
 from faker import Faker
 from pydantic import BaseModel, Field, PositiveInt
 
@@ -232,7 +233,7 @@ class Persona(ABSPersona, BaseModel):
             kwargs["name"] = faker.name()
             gender = random.choice(list(Gender))
             kwargs["gender"] = gender
-            kwargs["age"] = random.randint(13, 90)
+            kwargs["age"] = round(np.random.normal(36, 15, 1)[0])
             kwargs["skintone"] = random.choice(list(SkinTone))
             haircut = random.choice(list(HairCut))
             kwargs["face"] = Face(
