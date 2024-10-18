@@ -11,35 +11,6 @@ from abc import ABC, abstractmethod
 
 
 class ABCDHuman(ABC):
-    def __init__(self, voice=None, face_embeddings=None, persona=None):
-        self.__voice = voice
-        self.__face_embeddings = face_embeddings
-        self.__persona = persona
-
-    @property
-    def persona(self):
-        return self.__persona
-
-    @persona.setter
-    def persona(self, value):
-        self.__persona = value
-
-    @property
-    def face_embeddings(self):
-        return self.__face_embeddings
-
-    @face_embeddings.setter
-    def face_embeddings(self, value):
-        self.__face_embeddings = value
-
-    @property
-    def voice(self):
-        return self.__voice
-
-    @voice.setter
-    def voice(self, value):
-        self.__voice = value
-
     @abstractmethod
     def generate_photo(self, prompt: str) -> str:
         """
@@ -80,12 +51,12 @@ class SyntheticDHuman(ABCDHuman):
         self.face_swap = face_swap
         self.face_embedding_model = face_embedding_model
         self.face_swap_model = face_swap_model
+        self.persona = persona
+        self.voice = voice
 
         self._prepare_models()
         self.source_photo_path = self.generative_model.generate_photo(persona.prompt())
         self.face_embeddings = face_embeddings if face_embeddings else self.face_embedding_model.generate_embeddings([self.source_photo_path])[0]
-
-        super().__init__(voice=voice, face_embeddings=face_embeddings, persona=persona)
 
     def _prepare_models(self):
         self.generative_model.prepare_model()

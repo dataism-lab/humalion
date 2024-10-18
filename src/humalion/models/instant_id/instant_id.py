@@ -153,6 +153,9 @@ class InstantID(FaceSwapperModel, SaveImageWithUniqueNameMixin):
         )
         self._pbar.update(40)
 
+        self._load_poses()
+        self._pbar.update(45)
+
         self._pbar.set_description("Downloading RealVisXL_V4.0_Lightning...")
 
         global draw_kps
@@ -173,32 +176,6 @@ class InstantID(FaceSwapperModel, SaveImageWithUniqueNameMixin):
         self._pipeline.load_ip_adapter_instantid(os.path.join(self.models_weight_path, self.IP_ADAPTER_FILENAME))
         self._pbar.update(100)
 
-    # def swap_face_from_docs(self, source_image_path, face_emb: np.ndarray) -> str:
-    #     global draw_kps
-    #
-    #     source_image = load_image(source_image_path)
-    #
-    #     # prepare face emb
-    #     face_info = self.face_detector.get(cv2.cvtColor(np.array(source_image), cv2.COLOR_RGB2BGR))
-    #     face_info = sorted(face_info, key=lambda x: (x['bbox'][2] - x['bbox'][0]) * (x['bbox'][3] - x['bbox'][1]))[
-    #         -1]  # only use the maximum face
-    #     face_emb = face_info['embedding']
-    #     face_kps = draw_kps(source_image, face_info['kps'])  # noqa: F821
-    #     prompt = "highly detailed, sharp focus, ultra sharpness, cinematic"
-    #     negative_prompt = ""
-    #
-    #     image: PIL.Image = self._pipeline(
-    #         prompt,
-    #         negative_prompt=negative_prompt,
-    #         image_embeds=face_emb,
-    #         image=face_kps,
-    #         controlnet_conditioning_scale=0.8,
-    #         ip_adapter_scale=0.8,
-    #     ).images[0]
-    #     file_ext = '.jpg'
-    #     filepath = Path(self.output_dir) / (uuid.uuid4().hex + file_ext)
-    #     image.save(filepath)
-    #     return filepath.as_posix()
 
     def _random_pose(self, gender: FaceSwapperModel.Gender) -> np.ndarray:
         if gender == FaceSwapperModel.Gender.FEMALE:
@@ -241,6 +218,6 @@ class InstantID(FaceSwapperModel, SaveImageWithUniqueNameMixin):
         if not pipeline_result:
             raise ValueError(f"Error occured while swapping face on source image {source_image_path}")
 
-        image = pipeline_result[0]
+        image = pipeline_result.images[0]
         image_path = self._save_image(self.output_dir, image)
         return image_path
