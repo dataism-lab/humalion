@@ -1,12 +1,12 @@
 from abc import ABC
 
-from src.humalion.engine.image_generative_model import ImageGenerativeModel
-from src.humalion.services.replica import ReplicaService
-from src.humalion.utils.enum import StrEnum
+from ..engine.image_generative_model import ImageGenerativeModel
+from ..services.replica import ReplicaService
+from ..utils.enum import StrEnum
 
 
 class FluxReplica(ReplicaService, ImageGenerativeModel, ABC):
-    output_dir = 'output/flux_replica'
+    output_dir = "output/flux_replica"
 
     class Models(StrEnum):
         DEV = "black-forest-labs/flux-dev"
@@ -25,21 +25,21 @@ class FluxReplica(ReplicaService, ImageGenerativeModel, ABC):
 
 
 class FluxProReplica(FluxReplica):
-    output_dir = 'output/flux_pro_replica'
+    output_dir = "output/flux_pro_replica"
 
     def generate_photo(self, prompt: str) -> dict:
         return self._generate_photo(prompt, FluxProReplica.Models.PRO)
 
 
 class FluxDevReplica(FluxReplica):
-    output_dir = 'output/flux_dev_replica'
+    output_dir = "output/flux_dev_replica"
 
     def generate_photo(self, prompt: str) -> dict:
         return self._generate_photo(prompt, FluxDevReplica.Models.DEV)
 
 
 class FluxSchnellReplica(FluxReplica):
-    output_dir = 'output/flux_schnell_replica'
+    output_dir = "output/flux_schnell_replica"
 
     def generate_photo(self, prompt: str) -> dict:
         return self._generate_photo(prompt, FluxSchnellReplica.Models.SCHNELL)

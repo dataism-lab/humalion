@@ -4,9 +4,8 @@ import uuid
 import requests
 from requests import Response
 
-from src.humalion.engine.image_generative_model import ImageGenerativeModel
-
-from src.humalion.services.stability_ai import StabilityAI
+from ..engine.image_generative_model import ImageGenerativeModel
+from ..services.stability_ai import StabilityAI
 
 
 class SDCore(StabilityAI, ImageGenerativeModel):
@@ -26,13 +25,13 @@ class SDCore(StabilityAI, ImageGenerativeModel):
     }
 
     def __init__(
-            self,
-            api_key: str,
-            output_ratio: str = "2:3",
-            base_prompt_prefix: str | None = None,
-            base_prompt_suffix: str | None = None,
-            negative_prompt: str | None = None,
-            output_dir: str = "output/sdcore/",
+        self,
+        api_key: str,
+        output_ratio: str = "2:3",
+        base_prompt_prefix: str | None = None,
+        base_prompt_suffix: str | None = None,
+        negative_prompt: str | None = None,
+        output_dir: str = "output/sdcore/",
     ):
         if output_ratio not in self.AVAILABLE_RATIO:
             raise ValueError(f"output_ratio must be one of the following: {self.AVAILABLE_RATIO}")
@@ -43,7 +42,7 @@ class SDCore(StabilityAI, ImageGenerativeModel):
             api_key=api_key,
             base_prompt_prefix=base_prompt_prefix,
             base_prompt_suffix=base_prompt_suffix,
-            output_dir=output_dir
+            output_dir=output_dir,
         )
         self.headers = {
             "Authorization": f"Bearer {api_key}",
@@ -51,7 +50,7 @@ class SDCore(StabilityAI, ImageGenerativeModel):
         }
 
     def _generate_response(self, data: dict):
-        response = requests.post(url=self._text_to_img_url, headers=self.headers, files={"none": ''}, data=data)
+        response = requests.post(url=self._text_to_img_url, headers=self.headers, files={"none": ""}, data=data)
         return response
 
     def _save_img(self, response: Response) -> str:
@@ -64,9 +63,9 @@ class SDCore(StabilityAI, ImageGenerativeModel):
             str: The filepath of the saved image.
 
         """
-        filename = f'{uuid.uuid4().hex}.jpeg'
+        filename = f"{uuid.uuid4().hex}.jpeg"
         filepath = os.path.join(self.output_dir, filename)
-        with open(filepath, 'wb') as file:
+        with open(filepath, "wb") as file:
             file.write(response.content)
 
         return filepath
@@ -77,6 +76,6 @@ class SDCore(StabilityAI, ImageGenerativeModel):
             "aspect_ratio": self.output_ratio,
             "negative_prompt": self.negative_prompt,
             "output_format": "jpeg",
-            "style_preset": "photographic"
+            "style_preset": "photographic",
         }
         return request_data

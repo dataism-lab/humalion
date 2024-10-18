@@ -1,24 +1,24 @@
+from abc import ABC, ABCMeta, abstractmethod
+
+import requests
 from requests import Response
 
-from src.humalion.engine.image_generative_model import ImageGenerativeModel
-from abc import ABC, abstractmethod, ABCMeta
-import requests
-
-from src.humalion.utils.mixins import CheckOrCreateDirMixin
+from ..engine.image_generative_model import ImageGenerativeModel
+from ..utils.mixins import CheckOrCreateDirMixin
 
 
 class StabilityAI(ImageGenerativeModel, CheckOrCreateDirMixin, ABC, metaclass=ABCMeta):
     BASE_PROMPT_PREFIX = "High-definition, full-body portrait photograph of a "
     BASE_PROMPT_SUFFIX = """ suitable for a popular Instagram post. 
         Cinematic composition, professional color grading, film grain, atmospheric."""
-    API_HOST = 'https://api.stability.ai'
+    API_HOST = "https://api.stability.ai"
 
     def __init__(
-            self,
-            api_key: str,
-            base_prompt_prefix: str | None = None,
-            base_prompt_suffix: str | None = None,
-            output_dir: str = "output/stability/"
+        self,
+        api_key: str,
+        base_prompt_prefix: str | None = None,
+        base_prompt_suffix: str | None = None,
+        output_dir: str = "output/stability/",
     ):
         super().__init__()
         self.api_key = api_key
@@ -27,13 +27,13 @@ class StabilityAI(ImageGenerativeModel, CheckOrCreateDirMixin, ABC, metaclass=AB
         self.headers = {
             "Content-Type": "application/json",
             "Accept": "application/json",
-            "Authorization": f"Bearer {api_key}"
+            "Authorization": f"Bearer {api_key}",
         }
         self.output_dir = output_dir
         self._check_dir(self.output_dir)
 
     def _cover_prompt(self, prompt: str) -> str:
-        return f'{self.base_prompt_prefix} {prompt} {self.base_prompt_suffix}'
+        return f"{self.base_prompt_prefix} {prompt} {self.base_prompt_suffix}"
 
     @abstractmethod
     def _request_data(self, prompt: str) -> dict:

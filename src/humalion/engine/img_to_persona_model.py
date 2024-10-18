@@ -1,8 +1,6 @@
 from abc import ABC, abstractmethod
 
-from PIL import Image
-
-from src.humalion.engine.persona import ABSPersona
+from ..engine.persona import ABSPersona
 
 
 class ImgToPersonaModel(ABC):

@@ -3,14 +3,16 @@ import base64
 import instructor
 from openai import OpenAI
 
-from src.humalion.engine.img_to_persona_model import ImgToPersonaModel
-from src.humalion.engine.persona import Persona
+from ..engine.img_to_persona_model import ImgToPersonaModel
+from ..engine.persona import Persona
 
 
 class ChatGPT4ImgToPersona(ImgToPersonaModel):
     OPENAI_RESPONSE_TIMEOUT_SECONDS = 25
-    REQUEST_PROMPT = ("You are portrait painter. Given the image of the person your goal is to "
-                      "carefully describe its appearance. Make description as exact as you can.")
+    REQUEST_PROMPT = (
+        "You are portrait painter. Given the image of the person your goal is to "
+        "carefully describe its appearance. Make description as exact as you can."
+    )
     MODEL_NAME = "gpt-4o-2024-05-13"
 
     def __init__(self, openai_api_key: str):
@@ -24,18 +26,14 @@ class ChatGPT4ImgToPersona(ImgToPersonaModel):
         encoded_image = base64.b64encode(img_obj).decode("utf-8")
         data = [
             {
-                "role": "user", "content": [
-                {
-                    "type": "text",
-                    "text": self.REQUEST_PROMPT,
-                },
-                {
-                    "type": "image_url",
-                    "image_url": {
-                        "url": f"data:image/jpeg;base64,{encoded_image}"
-                    }
-                }
-            ]
+                "role": "user",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": self.REQUEST_PROMPT,
+                    },
+                    {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{encoded_image}"}},
+                ],
             }
         ]
         resp = self.instructor.chat.completions.create(

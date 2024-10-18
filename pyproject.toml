@@ -5,11 +5,11 @@ description = "Humalion"
 authors = ["Dataism Lab <timoshenkois.dev@gmail.com>"]
 license = "Apache-2.0"
 readme = "README.md"
-homepage = "https://github.com/dataism-lab/Humalion"
-repository = "https://github.com/dataism-lab/Humalion"
+homepage = "https://github.com/dataism-lab/humalion"
+repository = "https://github.com/dataism-lab/humalion"
 documentation = "https://humalion.readthedocs.io"
 classifiers = [
-    "Development Status :: 1 - Planning",
+    "Development Status :: 1 - Develop",
 ]
 
 [tool.poetry.urls]
@@ -39,6 +39,8 @@ notebook = "^7.2.2"
 instructor = "^1.4.2"
 backoff = "^2.2.1"
 lumaai = "^1.0.1"
+ruff = "^0.7.0"
+nox = "^2024.10.9"
 
 [tool.poetry.dev-dependencies]
 Pygments = ">=2.10.0"
@@ -96,6 +98,33 @@ pretty = true
 show_column_numbers = true
 show_error_codes = true
 show_error_context = true
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.ruff.lint]
+# See definitions https://docs.astral.sh/ruff/rules/
+select = [
+    "ASYNC", # flake8-async
+    "B",     # flake8-bugbear
+    "C4",    # flake8-comprehensions
+    "E",     # pycodestyle errors
+    "F",     # Pyflakes
+    "I",     # isort
+    "N",     # pep8-naming
+    "SIM",   # flake8-simplify
+    "T20",   # flake8-print
+    # "TD",    # flake8-todos
+]
+ignore-init-module-imports = true
+
+[tool.ruff.lint.per-file-ignores]
+# Ignore `E401` (import violations) in all `__init__.py` files, and in `path/to/file.py`.
+"__init__.py" = ["E401", "F401", "I001"]
+"*.ipynb" = ["E402", "E501", "T201"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

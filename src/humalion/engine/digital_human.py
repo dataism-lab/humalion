@@ -1,16 +1,22 @@
-import numpy as np
-
-from src.humalion.engine.face_detection_model import FaceDetectionModel
-from src.humalion.engine.face_embedding_model import FaceEmbeddingModel
-from src.humalion.engine.face_swapper import FaceSwapperModel
-from src.humalion.engine.image_generative_model import ImageGenerativeModel
-from src.humalion.engine.persona import ABSPersona
-from src.humalion.engine.user_photo import UserPhoto
-from IPython.display import Image, display
 from abc import ABC, abstractmethod
+from typing import Any
+
+import numpy as np
+from IPython.display import Image, display
+from loguru import logger
+
+from .face_embedding_model import FaceEmbeddingModel
+from .face_swapper import FaceSwapperModel
+from .image_generative_model import ImageGenerativeModel
+from .persona import ABSPersona
+from .user_photo import UserPhoto
 
 
 class ABCDHuman(ABC):
+    persona: ABSPersona
+    voice: Any
+    face_embeddings: np.ndarray | None
+
     @abstractmethod
     def generate_photo(self, prompt: str) -> str:
         """
@@ -35,14 +41,14 @@ class TwinDHuman(ABCDHuman):
 
 class SyntheticDHuman(ABCDHuman):
     def __init__(
-            self,
-            persona: ABSPersona,
-            generative_model: ImageGenerativeModel | None = None,
-            face_swap: bool = True,
-            face_embedding_model: FaceEmbeddingModel | None = None,
-            face_swap_model: FaceSwapperModel | None = None,
-            voice=None,
-            face_embeddings: np.ndarray | None = None,
+        self,
+        persona: ABSPersona,
+        generative_model: ImageGenerativeModel | None = None,
+        face_swap: bool = True,
+        face_embedding_model: FaceEmbeddingModel | None = None,
+        face_swap_model: FaceSwapperModel | None = None,
+        voice=None,
+        face_embeddings: np.ndarray | None = None,
     ):
         if face_swap and (face_embedding_model is None or face_swap_model is None):
             raise ValueError("If face_swap is True, face_embedding_model and face_swap_model must be set")
@@ -56,7 +62,11 @@ class SyntheticDHuman(ABCDHuman):
 
         self._prepare_models()
         self.source_photo_path = self.generative_model.generate_photo(persona.prompt())
-        self.face_embeddings = face_embeddings if face_embeddings else self.face_embedding_model.generate_embeddings([self.source_photo_path])[0]
+        self.face_embeddings = (
+            face_embeddings
+            if face_embeddings
+            else self.face_embedding_model.generate_embeddings([self.source_photo_path])[0]
+        )
 
     def _prepare_models(self):
         self.generative_model.prepare_model()
@@ -72,10 +82,9 @@ class SyntheticDHuman(ABCDHuman):
 
     def show(self):
         display(self._get_source_photo())
-        print(self.persona.prompt())
+        logger.info(self.persona.prompt())
 
     def generate_photo(self, prompt: str) -> str:
-        # source_img_path = self.generative_model.generate_photo(prompt=prompt)
         result_img_path = self.face_swap_model.swap_face(
             source_image_path=self.source_photo_path,
             face_emb=self.face_embeddings,
@@ -83,4 +92,3 @@ class SyntheticDHuman(ABCDHuman):
             gender=self.persona.gender,  # todo поправить на менее зависимое
         )
         return result_img_path
-

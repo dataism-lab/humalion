@@ -3,10 +3,10 @@ import uuid
 from os import PathLike
 from pathlib import Path
 from typing import BinaryIO
-from loguru import logger
 
 import aioboto3
 import botocore
+from loguru import logger
 
 
 class AsyncS3MediaStorage:

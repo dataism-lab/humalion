@@ -20,14 +20,14 @@ class DownloadFileMixin:
         if response.status_code != 200:
             response.raise_for_status()
 
-        with open(download_path, 'wb') as file:
+        with open(download_path, "wb") as file:
             file.write(response.content)
 
 
 class SaveImageWithUniqueNameMixin:
     @staticmethod
-    def _save_image(image_path: str, image: Image, extension: str = 'jpg') -> str:
-        filename = f'{uuid.uuid4().hex}.{extension}'
+    def _save_image(image_path: str, image: Image, extension: str = "jpg") -> str:
+        filename = f"{uuid.uuid4().hex}.{extension}"
         file_path = Path(image_path) / filename
         image.save(file_path.as_posix())
         return file_path.as_posix()

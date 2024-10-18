@@ -5,11 +5,11 @@ from typing import Any
 import replicate
 from PIL import Image
 
-from src.humalion.utils.mixins import DownloadTempFileMixin
+from ..utils.mixins import DownloadTempFileMixin
 
 
 class ReplicaService(DownloadTempFileMixin):
-    output_dir = 'output/replica'
+    output_dir = "output/replica"
 
     def __init__(self, api_key: str) -> None:
         super().__init__()
@@ -30,10 +30,10 @@ class ReplicaService(DownloadTempFileMixin):
             str: The filepath of the saved .jpeg image
 
         """
-        filename = f'{uuid.uuid4().hex}.jpeg'
+        filename = f"{uuid.uuid4().hex}.jpeg"
         filepath = os.path.join(self.output_dir, filename)
         tmp_webp_file_path = self._download_tmp_file(url=url)
-        img = Image.open(tmp_webp_file_path).convert('RGB')
+        img = Image.open(tmp_webp_file_path).convert("RGB")
         img.save(filepath, format="jpeg")
         os.remove(tmp_webp_file_path)
 
@@ -42,7 +42,7 @@ class ReplicaService(DownloadTempFileMixin):
     def run_model(self, model: str, input_data: dict) -> Any:
         output = replicate.run(model, input=input_data)
         if not output:
-            raise Exception('Failed to run replica API model')
+            raise Exception("Failed to run replica API model")
 
         filepath = self._save_img(output[0])
         return filepath

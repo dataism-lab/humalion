@@ -1,10 +1,12 @@
-from src.humalion.engine.video_generative_model import VideoGenerativeModel
-from src.humalion.services.luma import LumaService
+from ..engine.video_generative_model import VideoGenerativeModel
+from ..services.luma import LumaService
 
 
 class LumaVideoGenModel(LumaService, VideoGenerativeModel):
     BASE_PROMPT_PREFIX = "The main person from the image is correctly saying the following text: "
-    BASE_PROMPT_SUFFIX = " The camera should not move and be static. And the objects in the background should behave naturally."
+    BASE_PROMPT_SUFFIX = (
+        " The camera should not move and be static. And the objects in the background should behave naturally."
+    )
 
     def prepare_model(self):
         pass
@@ -14,11 +16,8 @@ class LumaVideoGenModel(LumaService, VideoGenerativeModel):
         generation = self.client.generations.create(
             prompt=text,
             keyframes={
-                "frame1": {
-                    "type": "image",
-                    "url": source_img
-                },
-            }
+                "frame1": {"type": "image", "url": source_img},
+            },
         )
 
         return generation

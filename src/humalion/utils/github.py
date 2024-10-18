@@ -1,11 +1,11 @@
+import base64
+import urllib
 from pathlib import Path
 
 from github import Github
-import urllib
-import base64
 
 
-def github_download_file(download_dir: str, repo: str, path: str, git_token: str | None = None, branch="main") -> str:
+def github_download_file(download_dir: str, repo: str, path: str, git_token: str | None = None, branch="main") -> Path:
     g = Github(git_token) if git_token else Github()
     path = Path(path)
     repo = g.get_repo(repo)

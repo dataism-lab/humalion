@@ -21,5 +21,3 @@ class FaceEmbeddingModel(ABC):
         You can create empty method if your model does not need to be prepared.
         """
         pass
-
-

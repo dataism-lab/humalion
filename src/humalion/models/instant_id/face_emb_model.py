@@ -1,25 +1,21 @@
 import uuid
-from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Iterable
 
 import cv2
 import numpy as np
-from PIL import Image
-from insightface.app import FaceAnalysis
 from insightface.app.common import Face
-from pydantic import BaseModel, FilePath, ConfigDict
+from PIL import Image
+from pydantic import BaseModel, ConfigDict, FilePath
 
-from src.humalion.engine.errors import ModelInferenceError
-from src.humalion.engine.face_embedding import PersonEmbedding
-from src.humalion.engine.face_embedding_model import FaceEmbeddingModel
-
-from src.humalion.engine.img_to_persona_model import ImgToPersonaModel
-from src.humalion.engine.persona import ABSPersona
-from src.humalion.models.instant_id.face_analysis import FixedFaceAnalysis
-from src.humalion.models.instant_id.utils import resize_img
-from src.humalion.utils.mixins import CheckOrCreateDirMixin
+from ...engine.errors import ModelInferenceError
+from ...engine.face_embedding_model import FaceEmbeddingModel
+from ...engine.img_to_persona_model import ImgToPersonaModel
+from ...engine.persona import ABSPersona
+from ...utils.mixins import CheckOrCreateDirMixin
+from ..instant_id.face_analysis import FixedFaceAnalysis
+from ..instant_id.utils import resize_img
 
 
 class PersonData(BaseModel):
@@ -31,13 +27,10 @@ class PersonData(BaseModel):
 
 
 class InstantIDFaceEmbModel(FaceEmbeddingModel, CheckOrCreateDirMixin):
-    BASE_RESOURCE_DIR = Path('humalion_resources')
+    BASE_RESOURCE_DIR = Path("humalion_resources")
 
     def __init__(
-            self,
-            img_to_pers_model: ImgToPersonaModel,
-            max_threads: int = 8,
-            output_dir: str = 'output/instant_id_emb/'
+        self, img_to_pers_model: ImgToPersonaModel, max_threads: int = 8, output_dir: str = "output/instant_id_emb/"
     ):
         self.img_to_pers_model = img_to_pers_model
         self.face_info_model = None
@@ -47,7 +40,7 @@ class InstantIDFaceEmbModel(FaceEmbeddingModel, CheckOrCreateDirMixin):
 
     def _init_face_analysis(self) -> None:
         self.face_info_model = FixedFaceAnalysis(
-            name="antelopev2", root=self.BASE_RESOURCE_DIR, providers=['CUDAExecutionProvider', "CPUExecutionProvider"]
+            name="antelopev2", root=self.BASE_RESOURCE_DIR, providers=["CUDAExecutionProvider", "CPUExecutionProvider"]
         )
         self.face_info_model.prepare(ctx_id=0, det_size=(320, 320))
 
@@ -109,19 +102,20 @@ class InstantIDFaceEmbModel(FaceEmbeddingModel, CheckOrCreateDirMixin):
             source_photo_paths: A list of file paths to source photos for which embeddings need to be generated.
 
         Returns:
-            A tuple containing the face embeddings as a NumPy array of dtype float32 and the appearance embeddings prompt string.
+            A tuple containing the face embeddings as a NumPy array of dtype float32
+            and the appearance embeddings prompt string.
         """
         with ThreadPoolExecutor(max_workers=min(len(source_photo_paths), self.max_threads)) as executor:
             person_data_list = list(executor.map(self._get_person_data, source_photo_paths))
 
         if not source_photo_paths:
-            raise ModelInferenceError(f'Embeddings of images: {source_photo_paths} have not been generated.')
+            raise ModelInferenceError(f"Embeddings of images: {source_photo_paths} have not been generated.")
         elif len(source_photo_paths) > 1:
             face_embeddings: list[np.array] = []
             appearance_embeddings: list[ABSPersona] = []
 
             for person_data in person_data_list:
-                face_embeddings.append(person_data.face_data['embedding'])
+                face_embeddings.append(person_data.face_data["embedding"])
                 if person_data.appearance_data:
                     appearance_embeddings.append(person_data.appearance_data)
 
@@ -131,10 +125,10 @@ class InstantIDFaceEmbModel(FaceEmbeddingModel, CheckOrCreateDirMixin):
                 persona_class = appearance_embeddings[0].__class__
                 result_appearance_emb = persona_class.mean(appearance_embeddings)
         elif len(source_photo_paths) == 1:
-            result_face_emb = person_data_list[0].face_data['embedding']
+            result_face_emb = person_data_list[0].face_data["embedding"]
             result_appearance_emb = person_data_list[0].appearance_data
         else:
-            raise ModelInferenceError(f'Embeddings of images: {source_photo_paths} have not been generated.')
+            raise ModelInferenceError(f"Embeddings of images: {source_photo_paths} have not been generated.")
 
         return np.array(result_face_emb, dtype=np.float32), np.array(result_appearance_emb.prompt())  # noqa
 

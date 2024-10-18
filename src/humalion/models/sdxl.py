@@ -5,12 +5,11 @@ import uuid
 import requests
 from requests import Response
 
-from src.humalion.engine.generative_model import GenerativeModel
+from ..engine.image_generative_model import ImageGenerativeModel
+from ..services.stability_ai import StabilityAI
 
-from src.humalion.services.stability_ai import StabilityAI
 
-
-class SDXL(StabilityAI, GenerativeModel):
+class SDXL(StabilityAI, ImageGenerativeModel):
     BASE_PROMPT_PREFIX = StabilityAI.BASE_PROMPT_PREFIX
     BASE_PROMPT_SUFFIX = StabilityAI.BASE_PROMPT_SUFFIX
     ENGINE_ID = "stable-diffusion-v1-6"
@@ -23,18 +22,18 @@ class SDXL(StabilityAI, GenerativeModel):
         (1344, 768),
         (768, 1344),
         (1536, 640),
-        (640, 1536)
+        (640, 1536),
     }
 
     def __init__(
-            self,
-            api_key: str,
-            base_prompt_prefix: str | None = None,
-            base_prompt_suffix: str | None = None,
-            output_resolution: list[int, int] | tuple[int, int] = (1024, 1024),
-            model_scale: int = 25,
-            output_dir: str = "output/sdxl/",
-            **kwargs,
+        self,
+        api_key: str,
+        base_prompt_prefix: str | None = None,
+        base_prompt_suffix: str | None = None,
+        output_resolution: list[int, int] | tuple[int, int] = (1024, 1024),
+        model_scale: int = 25,
+        output_dir: str = "output/sdxl/",
+        **kwargs,
     ):
         if output_resolution not in self.AVAILABLE_RESOLUTIONS:
             raise ValueError(f"output_resolution must be one of the following: {self.AVAILABLE_RESOLUTIONS}")
@@ -46,7 +45,7 @@ class SDXL(StabilityAI, GenerativeModel):
             api_key=api_key,
             base_prompt_prefix=base_prompt_prefix,
             base_prompt_suffix=base_prompt_suffix,
-            output_dir=output_dir
+            output_dir=output_dir,
         )
 
     def _generate_response(self, data: dict):
@@ -63,7 +62,7 @@ class SDXL(StabilityAI, GenerativeModel):
 
         """
         resp_data = response.json()
-        filename = f'{uuid.uuid4().hex}.png'
+        filename = f"{uuid.uuid4().hex}.png"
         filepath = os.path.join(self.output_dir, filename)
         image = resp_data["artifacts"][0]
         with open(filepath, "wb") as f:
@@ -71,20 +70,15 @@ class SDXL(StabilityAI, GenerativeModel):
 
         return filepath
 
-
     def _request_data(self, prompt: str) -> dict:
         request_data = {
-            "text_prompts": [
-                {
-                    "text": prompt
-                }
-            ],
+            "text_prompts": [{"text": prompt}],
             "cfg_scale": self.model_scale,
             "height": self.output_resolution[1],
             "width": self.output_resolution[0],
             "samples": 1,
             "steps": 30,
             "style_preset": "photographic",
-            **self.additional_model_params
+            **self.additional_model_params,
         }
         return request_data
